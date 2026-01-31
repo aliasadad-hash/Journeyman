@@ -1461,31 +1461,10 @@ async def get_profile_views(request: Request, days: int = 7):
 
 # ==================== WEBSOCKET ====================
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
-    
-    async def connect(self, websocket: WebSocket, user_id: str):
-        await websocket.accept()
-        self.active_connections[user_id] = websocket
-        await db.users.update_one({"user_id": user_id}, {"$set": {"online": True}})
-    
-    def disconnect(self, user_id: str):
-        if user_id in self.active_connections:
-            del self.active_connections[user_id]
-    
-    async def send_personal_message(self, message: dict, user_id: str):
-        if user_id in self.active_connections:
-            try:
-                await self.active_connections[user_id].send_json(message)
-            except:
-                self.disconnect(user_id)
-
-manager = ConnectionManager()
-
 @app.websocket("/ws/{user_id}")
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await manager.connect(websocket, user_id)
+    await db.users.update_one({"user_id": user_id}, {"$set": {"online": True}})
     try:
         while True:
             data = await websocket.receive_json()
@@ -1495,33 +1474,52 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 content = data.get("content")
                 message_type = data.get("message_type", "text")
                 media_url = data.get("media_url")
+                gif_data = data.get("gif_data")
                 
                 conv_id = get_conversation_id(user_id, recipient_id)
-                chat_msg = ChatMessage(
-                    conversation_id=conv_id,
-                    sender_id=user_id,
-                    recipient_id=recipient_id,
-                    content=content,
-                    message_type=message_type,
-                    media_url=media_url
-                )
                 
-                doc = chat_msg.model_dump()
-                doc["created_at"] = doc["created_at"].isoformat()
-                await db.messages.insert_one(doc)
-                doc.pop("_id", None)
+                message = {
+                    "message_id": f"msg_{uuid.uuid4().hex[:12]}",
+                    "conversation_id": conv_id,
+                    "sender_id": user_id,
+                    "recipient_id": recipient_id,
+                    "content": content,
+                    "message_type": message_type,
+                    "media_url": media_url,
+                    "gif_data": gif_data,
+                    "reactions": [],
+                    "read": False,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
                 
-                await manager.send_personal_message({"type": "new_message", "message": doc}, recipient_id)
-                await websocket.send_json({"type": "message_sent", "message": doc})
+                await db.messages.insert_one(message)
+                message.pop("_id", None)
+                
+                await manager.send_personal_message({"type": "new_message", "message": message}, recipient_id)
+                await websocket.send_json({"type": "message_sent", "message": message})
             
             elif data.get("type") == "typing":
                 recipient_id = data.get("recipient_id")
                 is_typing = data.get("is_typing", True)
-                await manager.send_personal_message({
-                    "type": "typing",
-                    "user_id": user_id,
-                    "is_typing": is_typing
-                }, recipient_id)
+                await manager.send_typing_indicator(user_id, recipient_id, is_typing)
+            
+            elif data.get("type") == "reaction":
+                message_id = data.get("message_id")
+                emoji = data.get("emoji")
+                
+                await db.messages.update_one(
+                    {"message_id": message_id},
+                    {"$addToSet": {"reactions": {"user_id": user_id, "emoji": emoji, "created_at": datetime.now(timezone.utc).isoformat()}}}
+                )
+                
+                msg = await db.messages.find_one({"message_id": message_id}, {"_id": 0, "sender_id": 1})
+                if msg and msg["sender_id"] != user_id:
+                    await manager.send_personal_message({
+                        "type": "reaction",
+                        "message_id": message_id,
+                        "user_id": user_id,
+                        "emoji": emoji
+                    }, msg["sender_id"])
             
             elif data.get("type") == "read":
                 conv_id = data.get("conversation_id")
@@ -1546,6 +1544,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             {"user_id": user_id},
             {"$set": {"online": False, "last_active": datetime.now(timezone.utc).isoformat()}}
         )
+        await manager.broadcast_status(user_id, False)
 
 # Include the router
 app.include_router(api_router)
