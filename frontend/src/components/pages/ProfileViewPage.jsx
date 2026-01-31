@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../utils/api';
 import { PROFESSIONS } from '../../utils/constants';
+import { AICompatibilityScore } from '../shared/AIFeatures';
 import * as Icons from '../shared/Icons';
 
 export const ProfileViewPage = () => {
