@@ -985,29 +985,90 @@ function NearbyPage() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [locationError, setLocationError] = useState(null);
+  const { location, error: geoError, loading: geoLoading, requestLocation } = useGeolocation();
 
-  useEffect(() => { api.get('/discover/nearby').then(r => setUsers(r.users)).catch(console.error).finally(() => setLoading(false)); }, []);
+  useEffect(() => {
+    // Request location on mount
+    requestLocation();
+  }, [requestLocation]);
+
+  useEffect(() => {
+    if (location) {
+      loadNearbyUsers();
+    }
+  }, [location]);
+
+  const loadNearbyUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/discover/nearby?radius=50');
+      setUsers(res.users);
+      if (res.message) setLocationError(res.message);
+    } catch (err) {
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="nearby-page">
       <header className="sticky top-0 z-40 glass-dark p-4 flex items-center gap-4">
         <button onClick={() => navigate(-1)} className="p-2"><Icons.ChevronLeft size={24} /></button>
         <h1 className="text-2xl font-bold gradient-text">Nearby</h1>
+        {location && (
+          <span className="ml-auto badge badge-gold text-xs">
+            <Icons.MapPin size={12} /> Location Active
+          </span>
+        )}
       </header>
+      
       <main className="p-4">
-        {loading ? <div className="flex justify-center py-20"><div className="spinner"></div></div> : users.length === 0 ? (
-          <div className="empty-state"><div className="empty-state-icon"><Icons.Map size={40} className="text-[var(--muted-foreground)]" /></div><h3 className="text-2xl mb-3 text-[var(--brand-gold)]">No One Nearby</h3><p className="text-[var(--muted-foreground)]">Enable location or check back later</p></div>
+        {geoLoading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="spinner mb-4"></div>
+            <p className="text-[var(--muted-foreground)]">Getting your location...</p>
+          </div>
+        ) : geoError || locationError ? (
+          <div className="empty-state">
+            <div className="empty-state-icon"><Icons.MapPin size={40} className="text-[var(--error)]" /></div>
+            <h3 className="text-2xl mb-3 text-[var(--brand-gold)]">Location Required</h3>
+            <p className="text-[var(--muted-foreground)] mb-6">{geoError || locationError || 'Enable location to see nearby users'}</p>
+            <button onClick={requestLocation} className="btn-primary">Enable Location</button>
+          </div>
+        ) : loading ? (
+          <div className="flex justify-center py-20"><div className="spinner"></div></div>
+        ) : users.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon"><Icons.Map size={40} className="text-[var(--muted-foreground)]" /></div>
+            <h3 className="text-2xl mb-3 text-[var(--brand-gold)]">No One Nearby</h3>
+            <p className="text-[var(--muted-foreground)]">No travelers within 50 miles right now</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
-            {users.map(u => (
-              <button key={u.user_id} onClick={() => navigate(`/profile/${u.user_id}`)} className="card overflow-hidden">
-                <div className="aspect-square relative">
-                  <img src={u.profile_photo || u.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}`} alt={u.name} className="w-full h-full object-cover" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80">
-                    <p className="font-bold">{u.name}</p>
-                    <p className="text-xs text-white/70">{u.distance} mi away</p>
+          <>
+            <p className="text-[var(--muted-foreground)] mb-4">{users.length} traveler{users.length !== 1 ? 's' : ''} within 50 miles</p>
+            <div className="grid grid-cols-2 gap-4">
+              {users.map(u => (
+                <button key={u.user_id} onClick={() => navigate(`/profile/${u.user_id}`)} className="card overflow-hidden group">
+                  <div className="aspect-square relative">
+                    <img src={u.profile_photo || u.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}`} alt={u.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    {u.online && <span className="online-indicator" />}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80">
+                      <p className="font-bold">{u.name}</p>
+                      <p className="text-xs text-white/70 flex items-center gap-1"><Icons.MapPin size={10} /> {u.distance} mi away</p>
+                    </div>
                   </div>
-                </div>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </main>
+      <BottomNav active="discover" />
+    </div>
+  );
+}
               </button>
             ))}
           </div>
