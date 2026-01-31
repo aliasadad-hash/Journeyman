@@ -4,9 +4,9 @@ const API = `${BACKEND_URL}/api`;
 export const api = {
   get: async (endpoint) => {
     const token = localStorage.getItem('session_token');
-    const res = await fetch(`${API}${endpoint}`, {
-      credentials: 'include',
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    const res = await fetch(`${API}${endpoint}`, { 
+      credentials: 'include', 
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {} 
     });
     if (!res.ok) throw new Error('Request failed');
     return res.json();
@@ -14,28 +14,28 @@ export const api = {
   post: async (endpoint, data) => {
     const token = localStorage.getItem('session_token');
     const res = await fetch(`${API}${endpoint}`, {
-      method: 'POST',
+      method: 'POST', 
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      headers: { 
+        'Content-Type': 'application/json', 
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}) 
       },
       body: JSON.stringify(data)
     });
-    if (!res.ok) {
-      const error = await res.json().catch(() => ({}));
-      throw new Error(error.detail || 'Request failed');
+    if (!res.ok) { 
+      const error = await res.json().catch(() => ({})); 
+      throw new Error(error.detail || 'Request failed'); 
     }
     return res.json();
   },
   put: async (endpoint, data) => {
     const token = localStorage.getItem('session_token');
     const res = await fetch(`${API}${endpoint}`, {
-      method: 'PUT',
+      method: 'PUT', 
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      headers: { 
+        'Content-Type': 'application/json', 
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}) 
       },
       body: JSON.stringify(data)
     });
@@ -44,14 +44,14 @@ export const api = {
   },
   delete: async (endpoint) => {
     const token = localStorage.getItem('session_token');
-    const res = await fetch(`${API}${endpoint}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    const res = await fetch(`${API}${endpoint}`, { 
+      method: 'DELETE', 
+      credentials: 'include', 
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {} 
     });
     if (!res.ok) throw new Error('Request failed');
     return res.json();
   }
 };
 
-export default api;
+export { API, BACKEND_URL };
