@@ -1069,15 +1069,6 @@ function NearbyPage() {
     </div>
   );
 }
-              </button>
-            ))}
-          </div>
-        )}
-      </main>
-      <BottomNav active="discover" />
-    </div>
-  );
-}
 
 function BottomNav({ active }) {
   const navigate = useNavigate();
