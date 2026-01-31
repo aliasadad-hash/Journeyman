@@ -997,10 +997,10 @@ function NearbyPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [locationError, setLocationError] = useState(null);
+  const [viewMode, setViewMode] = useState('map'); // 'map' or 'list'
   const { location, error: geoError, loading: geoLoading, requestLocation } = useGeolocation();
 
   useEffect(() => {
-    // Request location on mount
     requestLocation();
   }, [requestLocation]);
 
@@ -1023,19 +1023,50 @@ function NearbyPage() {
     }
   };
 
+  // Create custom marker icon for users
+  const createUserIcon = (user) => {
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `<img src="${user.profile_photo || user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=1E293B&color=F8FAFC`}" class="map-marker ${user.online ? 'map-marker-online' : ''}" />`,
+      iconSize: [50, 50],
+      iconAnchor: [25, 25],
+      popupAnchor: [0, -25]
+    });
+  };
+
+  // Current location marker
+  const currentLocationIcon = L.divIcon({
+    className: 'custom-marker',
+    html: '<div class="current-location-marker"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="nearby-page">
-      <header className="sticky top-0 z-40 glass-dark p-4 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2"><Icons.ChevronLeft size={24} /></button>
-        <h1 className="text-2xl font-bold gradient-text">Nearby</h1>
-        {location && (
-          <span className="ml-auto badge badge-gold text-xs">
-            <Icons.MapPin size={12} /> Location Active
-          </span>
+      <header className="sticky top-0 z-40 glass-dark p-4">
+        <div className="flex items-center gap-4 mb-4">
+          <button onClick={() => navigate(-1)} className="p-2"><Icons.ChevronLeft size={24} /></button>
+          <h1 className="text-2xl font-bold gradient-text">Nearby</h1>
+          {location && (
+            <span className="ml-auto badge badge-gold text-xs">
+              <Icons.MapPin size={12} /> Active
+            </span>
+          )}
+        </div>
+        {location && users.length > 0 && (
+          <div className="map-view-toggle">
+            <button className={viewMode === 'map' ? 'active' : ''} onClick={() => setViewMode('map')}>
+              <Icons.Map size={16} /> Map
+            </button>
+            <button className={viewMode === 'list' ? 'active' : ''} onClick={() => setViewMode('list')}>
+              <Icons.Users size={16} /> List
+            </button>
+          </div>
         )}
       </header>
       
-      <main className="p-4">
+      <main className={viewMode === 'map' && location && users.length > 0 ? 'p-0' : 'p-4'}>
         {geoLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="spinner mb-4"></div>
@@ -1055,6 +1086,60 @@ function NearbyPage() {
             <div className="empty-state-icon"><Icons.Map size={40} className="text-[var(--muted-foreground)]" /></div>
             <h3 className="text-2xl mb-3 text-[var(--brand-gold)]">No One Nearby</h3>
             <p className="text-[var(--muted-foreground)]">No travelers within 50 miles right now</p>
+          </div>
+        ) : viewMode === 'map' ? (
+          <div className="h-[calc(100vh-180px)] w-full">
+            <MapContainer 
+              center={[location.latitude, location.longitude]} 
+              zoom={11} 
+              style={{ height: '100%', width: '100%' }}
+              zoomControl={false}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              />
+              
+              {/* Current location marker */}
+              <Marker position={[location.latitude, location.longitude]} icon={currentLocationIcon}>
+                <Popup>
+                  <div className="map-user-popup text-center">
+                    <p className="text-[var(--brand-gold)] font-semibold">You are here</p>
+                  </div>
+                </Popup>
+              </Marker>
+
+              {/* User markers */}
+              {users.filter(u => u.latitude && u.longitude).map(user => (
+                <Marker 
+                  key={user.user_id} 
+                  position={[user.latitude, user.longitude]} 
+                  icon={createUserIcon(user)}
+                >
+                  <Popup>
+                    <div className="map-user-popup">
+                      <div className="flex flex-col items-center">
+                        <img 
+                          src={user.profile_photo || user.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`} 
+                          alt={user.name} 
+                        />
+                        <h4 className="font-bold">{user.name}{user.age && `, ${user.age}`}</h4>
+                        <p className="flex items-center gap-1">
+                          <Icons.MapPin size={12} /> {user.distance} mi away
+                          {user.online && <span className="text-[#22C55E] ml-2">● Online</span>}
+                        </p>
+                        <button 
+                          onClick={() => navigate(`/profile/${user.user_id}`)} 
+                          className="btn-primary mt-2"
+                        >
+                          View Profile
+                        </button>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
           </div>
         ) : (
           <>
