@@ -230,6 +230,18 @@ export const ChatPage = () => {
       {/* Messages */}
       <main className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-4 max-w-2xl mx-auto">
+          {/* AI Features - shown when conversation is empty or at the top */}
+          {messages.length === 0 && otherUser && (
+            <div className="mb-6 space-y-4">
+              <div className="text-center text-[var(--text-secondary)] py-4">
+                <p className="text-lg mb-2">Start a conversation with {otherUser.name?.split(' ')[0]}!</p>
+                <p className="text-sm opacity-75">Need some help breaking the ice?</p>
+              </div>
+              <AIIceBreakers matchUserId={userId} matchName={otherUser.name?.split(' ')[0] || 'your match'} />
+              <AICompatibilityScore userId={userId} userName={otherUser.name?.split(' ')[0] || 'User'} />
+            </div>
+          )}
+          
           {messages.map(msg => (
             <div 
               key={msg.message_id} 
