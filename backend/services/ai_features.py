@@ -245,7 +245,130 @@ CONVERSATION_TOPICS:
             raise
 
 
+class AIFirstMessageGenerator:
+    """Generate perfect first messages combining compatibility + ice breakers."""
+    
+    def __init__(self):
+        self.api_key = EMERGENT_LLM_KEY
+    
+    async def generate_first_message(
+        self,
+        your_profile: Dict,
+        their_profile: Dict,
+        tone: str = "friendly"
+    ) -> Dict:
+        """
+        Generate a personalized first message for a new match.
+        
+        Args:
+            your_profile: Current user's profile data
+            their_profile: Match's profile data
+            tone: Message tone - "friendly", "flirty", "witty", "sincere"
+        
+        Returns:
+            Dict with message, talking_points, and confidence_score
+        """
+        if not self.api_key:
+            raise ValueError("EMERGENT_LLM_KEY not configured")
+        
+        chat = LlmChat(
+            api_key=self.api_key,
+            session_id=f"first_msg_{uuid.uuid4().hex[:8]}",
+            system_message="""You are a dating conversation expert for Journeyman, a premium dating app for travelers.
+            Generate the PERFECT first message for a new match. The message should:
+            - Feel personal and reference specific details from their profile
+            - Be warm and inviting, not creepy or generic
+            - Be short (under 100 characters) but memorable
+            - Make them want to respond immediately
+            - Subtly acknowledge the shared traveler lifestyle
+            You'll also provide 2-3 follow-up talking points if they respond."""
+        ).with_model("openai", "gpt-5.2")
+        
+        your_name = your_profile.get("name", "").split()[0] if your_profile.get("name") else "you"
+        your_interests = ", ".join(your_profile.get("interests", [])) or "traveling"
+        your_profession = your_profile.get("profession", "traveler")
+        
+        their_name = their_profile.get("name", "").split()[0] if their_profile.get("name") else "them"
+        their_interests = ", ".join(their_profile.get("interests", [])) or "traveling"
+        their_profession = their_profile.get("profession", "traveler")
+        their_bio = their_profile.get("bio", "")[:150] if their_profile.get("bio") else ""
+        their_location = their_profile.get("location", "")
+        
+        # Find shared interests
+        your_interest_set = set(i.lower() for i in your_profile.get("interests", []))
+        their_interest_set = set(i.lower() for i in their_profile.get("interests", []))
+        shared = your_interest_set & their_interest_set
+        shared_interests = ", ".join(shared) if shared else "traveling lifestyle"
+        
+        prompt = f"""Generate a {tone} first message for a new match on a dating app.
+
+YOUR PROFILE:
+- Name: {your_name}
+- Profession: {your_profession}
+- Interests: {your_interests}
+
+THEIR PROFILE:
+- Name: {their_name}
+- Profession: {their_profession}
+- Location: {their_location}
+- Bio: {their_bio}
+- Interests: {their_interests}
+
+SHARED INTERESTS: {shared_interests}
+
+Generate your response in this EXACT format:
+MESSAGE: [your opening message - under 100 chars, reference something specific]
+TALKING_POINTS:
+- [follow-up topic 1 if they respond]
+- [follow-up topic 2 if they respond]
+CONFIDENCE: [1-10 how likely they'll respond based on compatibility]
+WHY_IT_WORKS: [brief explanation of why this message is effective]"""
+        
+        user_message = UserMessage(text=prompt)
+        
+        try:
+            response = await chat.send_message(user_message)
+            
+            # Parse response
+            result = {
+                "message": "",
+                "talking_points": [],
+                "confidence_score": 7,
+                "why_it_works": "",
+                "their_name": their_name,
+                "shared_interests": list(shared) if shared else []
+            }
+            
+            lines = response.strip().split('\n')
+            current_section = None
+            
+            for line in lines:
+                line = line.strip()
+                if line.startswith("MESSAGE:"):
+                    result["message"] = line.replace("MESSAGE:", "").strip().strip('"').strip("'")
+                elif line == "TALKING_POINTS:":
+                    current_section = "talking_points"
+                elif line.startswith("CONFIDENCE:"):
+                    try:
+                        score = line.replace("CONFIDENCE:", "").strip()
+                        result["confidence_score"] = min(10, max(1, int(float(score))))
+                    except:
+                        pass
+                elif line.startswith("WHY_IT_WORKS:"):
+                    result["why_it_works"] = line.replace("WHY_IT_WORKS:", "").strip()
+                elif line.startswith("-") and current_section == "talking_points":
+                    text = line[1:].strip()
+                    if text:
+                        result["talking_points"].append(text)
+            
+            return result
+        except Exception as e:
+            logger.error(f"First message generation error: {e}")
+            raise
+
+
 # Singleton instances
 bio_generator = AIBioGenerator()
 ice_breaker_generator = AIIceBreakerGenerator()
 smart_matcher = AISmartMatcher()
+first_message_generator = AIFirstMessageGenerator()
