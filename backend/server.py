@@ -538,6 +538,39 @@ async def check_hot_traveler(user_id: str, target_lat: float = None, target_lon:
         }
     return {"is_hot_traveler": False}
 
+async def batch_check_hot_travelers(user_ids: List[str]) -> Dict[str, dict]:
+    """Batch check hot traveler status for multiple users - fixes N+1 query"""
+    if not user_ids:
+        return {}
+    
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Single query to get all active schedules for the given users
+    active_schedules = await db.schedules.find({
+        "user_id": {"$in": user_ids},
+        "start_date": {"$lte": today},
+        "end_date": {"$gte": today}
+    }, {"_id": 0}).to_list(None)
+    
+    # Create a map of user_id -> hot traveler info
+    hot_traveler_map = {}
+    for schedule in active_schedules:
+        user_id = schedule["user_id"]
+        if user_id not in hot_traveler_map:  # Take first active schedule if multiple
+            hot_traveler_map[user_id] = {
+                "is_hot_traveler": True,
+                "traveling_to": schedule.get("destination"),
+                "trip_title": schedule.get("title"),
+                "trip_ends": schedule.get("end_date")
+            }
+    
+    # Return map with default values for non-hot travelers
+    result = {}
+    for user_id in user_ids:
+        result[user_id] = hot_traveler_map.get(user_id, {"is_hot_traveler": False})
+    
+    return result
+
 @api_router.get("/discover/nearby")
 async def get_nearby_users(request: Request, radius: int = 50):
     """Get users within a radius (miles) for map view"""
