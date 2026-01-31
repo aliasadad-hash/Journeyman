@@ -218,4 +218,4 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - WebSocket endpoint: /ws/{user_id}
 
 ## Last Updated
-January 31, 2026 - Major refactoring from monolithic to component-based architecture + silhouette backgrounds
+January 31, 2026 - Fixed login blocker (CORS), tested all new features (GIF/emoji pickers, social links, settings, notifications)
