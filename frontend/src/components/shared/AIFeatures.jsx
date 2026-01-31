@@ -295,3 +295,203 @@ export const AICompatibilityScore = ({ userId, userName }) => {
     </div>
   );
 };
+
+export const AIFirstMessage = ({ matchUserId, matchName, onSendMessage }) => {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [tone, setTone] = useState('friendly');
+  const [show, setShow] = useState(false);
+
+  const tones = [
+    { value: 'friendly', label: 'Friendly', emoji: '😊' },
+    { value: 'flirty', label: 'Flirty', emoji: '😏' },
+    { value: 'witty', label: 'Witty', emoji: '😎' },
+    { value: 'sincere', label: 'Sincere', emoji: '💝' }
+  ];
+
+  const generateMessage = async () => {
+    setLoading(true);
+    try {
+      const response = await api.post(`/ai/first-message/${matchUserId}`, { tone });
+      setResult(response);
+    } catch (err) {
+      console.error('Failed to generate first message:', err);
+      alert('Failed to generate message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendMessage = () => {
+    if (result?.message && onSendMessage) {
+      onSendMessage(result.message);
+      setShow(false);
+      setResult(null);
+    }
+  };
+
+  const copyMessage = () => {
+    if (result?.message) {
+      navigator.clipboard.writeText(result.message);
+    }
+  };
+
+  if (!show) {
+    return (
+      <button
+        onClick={() => setShow(true)}
+        className="btn-primary w-full py-3 flex items-center justify-center gap-2 text-sm font-semibold"
+        data-testid="ai-first-message-btn"
+      >
+        <Icons.Sparkles size={18} className="text-[var(--background)]" />
+        <span>✨ Generate Perfect First Message</span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="ai-first-message p-4 rounded-xl bg-gradient-to-br from-[var(--brand-gold)]/10 via-[var(--secondary)]/50 to-transparent border border-[var(--brand-gold)]/30 space-y-4 animate-scale-in" data-testid="ai-first-message-panel">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Icons.Sparkles size={18} className="text-[var(--brand-gold)]" />
+          <span className="font-semibold">AI First Message</span>
+        </div>
+        <button onClick={() => { setShow(false); setResult(null); }} className="text-[var(--text-secondary)] hover:text-white">
+          <Icons.X size={18} />
+        </button>
+      </div>
+
+      {!result ? (
+        <>
+          {/* Tone selector */}
+          <div>
+            <p className="text-xs text-[var(--text-secondary)] mb-2">Select your vibe:</p>
+            <div className="grid grid-cols-4 gap-2">
+              {tones.map(t => (
+                <button
+                  key={t.value}
+                  onClick={() => setTone(t.value)}
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-all flex flex-col items-center gap-1 ${
+                    tone === t.value 
+                      ? 'bg-[var(--brand-gold)] text-[var(--background)]' 
+                      : 'bg-[var(--secondary)] hover:bg-[var(--secondary)]/80'
+                  }`}
+                  data-testid={`tone-${t.value}`}
+                >
+                  <span className="text-lg">{t.emoji}</span>
+                  <span>{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Generate button */}
+          <button
+            onClick={generateMessage}
+            disabled={loading}
+            className="btn-primary w-full py-3 flex items-center justify-center gap-2"
+            data-testid="generate-first-message-btn"
+          >
+            {loading ? (
+              <>
+                <div className="spinner-small" />
+                <span>Crafting the perfect opener...</span>
+              </>
+            ) : (
+              <>
+                <Icons.Sparkles size={18} />
+                <span>Generate {tone.charAt(0).toUpperCase() + tone.slice(1)} Message for {matchName}</span>
+              </>
+            )}
+          </button>
+        </>
+      ) : (
+        <>
+          {/* Generated message */}
+          <div className="space-y-3">
+            {/* Confidence indicator */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[var(--text-secondary)]">Response likelihood:</span>
+              <div className="flex items-center gap-1">
+                {[...Array(10)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${i < result.confidence_score ? 'bg-[var(--brand-gold)]' : 'bg-[var(--secondary)]'}`}
+                  />
+                ))}
+                <span className="text-xs ml-1 text-[var(--brand-gold)] font-bold">{result.confidence_score}/10</span>
+              </div>
+            </div>
+
+            {/* The message */}
+            <div className="p-4 rounded-xl bg-[var(--brand-gold)]/10 border border-[var(--brand-gold)]/30">
+              <p className="text-lg font-medium leading-relaxed">"{result.message}"</p>
+            </div>
+
+            {/* Why it works */}
+            {result.why_it_works && (
+              <p className="text-xs text-[var(--text-secondary)] italic">
+                💡 {result.why_it_works}
+              </p>
+            )}
+
+            {/* Shared interests */}
+            {result.shared_interests?.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-[var(--text-secondary)]">You both like:</span>
+                {result.shared_interests.map((interest, i) => (
+                  <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Talking points */}
+            {result.talking_points?.length > 0 && (
+              <div className="pt-2 border-t border-[var(--secondary)]">
+                <p className="text-xs text-[var(--text-secondary)] mb-2">If they respond, talk about:</p>
+                <div className="space-y-1">
+                  {result.talking_points.map((point, i) => (
+                    <p key={i} className="text-xs flex items-start gap-2">
+                      <span className="text-[var(--brand-gold)]">→</span>
+                      {point}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={generateMessage}
+                disabled={loading}
+                className="btn-secondary flex-1 py-2 text-sm flex items-center justify-center gap-1"
+              >
+                <Icons.RefreshCw size={14} />
+                Regenerate
+              </button>
+              <button
+                onClick={copyMessage}
+                className="btn-secondary px-4 py-2 text-sm"
+                title="Copy to clipboard"
+              >
+                <Icons.Copy size={14} />
+              </button>
+              <button
+                onClick={sendMessage}
+                className="btn-primary flex-1 py-2 text-sm flex items-center justify-center gap-1"
+                data-testid="send-ai-message-btn"
+              >
+                <Icons.Send size={14} />
+                Send Now
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
