@@ -1062,6 +1062,403 @@ async def get_unread_count(request: Request):
     count = await db.notifications.count_documents({"user_id": current_user["user_id"], "read": False})
     return {"count": count}
 
+# ==================== GIF SEARCH (GIPHY) ====================
+
+@api_router.get("/gifs/search")
+async def search_gifs(q: str = Query(..., min_length=1), limit: int = Query(20, ge=1, le=50)):
+    """Search for GIFs using GIPHY API"""
+    try:
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.get(
+                "https://api.giphy.com/v1/gifs/search",
+                params={"api_key": GIPHY_API_KEY, "q": q, "limit": limit, "rating": "pg-13"},
+                timeout=10.0
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            gifs = []
+            for item in data.get("data", []):
+                gifs.append({
+                    "id": item["id"],
+                    "title": item.get("title", "GIF"),
+                    "url": item["url"],
+                    "preview_url": item["images"]["fixed_width_small"]["url"],
+                    "original_url": item["images"]["original"]["url"],
+                    "width": item["images"]["fixed_width"]["width"],
+                    "height": item["images"]["fixed_width"]["height"]
+                })
+            return {"gifs": gifs}
+    except Exception as e:
+        logger.error(f"GIPHY API error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to search GIFs")
+
+@api_router.get("/gifs/trending")
+async def get_trending_gifs(limit: int = Query(20, ge=1, le=50)):
+    """Get trending GIFs"""
+    try:
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.get(
+                "https://api.giphy.com/v1/gifs/trending",
+                params={"api_key": GIPHY_API_KEY, "limit": limit, "rating": "pg-13"},
+                timeout=10.0
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            gifs = []
+            for item in data.get("data", []):
+                gifs.append({
+                    "id": item["id"],
+                    "title": item.get("title", "GIF"),
+                    "url": item["url"],
+                    "preview_url": item["images"]["fixed_width_small"]["url"],
+                    "original_url": item["images"]["original"]["url"]
+                })
+            return {"gifs": gifs}
+    except Exception as e:
+        logger.error(f"GIPHY trending error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get trending GIFs")
+
+# ==================== MEDIA UPLOAD ====================
+
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+@api_router.post("/media/upload")
+async def upload_media(request: Request, file: UploadFile = File(...), media_type: str = Form("image")):
+    """Upload photo or video for profile or chat"""
+    current_user = await get_current_user(request)
+    
+    # Validate file type
+    allowed_image = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+    allowed_video = ["video/mp4", "video/quicktime", "video/webm"]
+    
+    if media_type == "image" and file.content_type not in allowed_image:
+        raise HTTPException(status_code=400, detail="Invalid image format")
+    if media_type == "video" and file.content_type not in allowed_video:
+        raise HTTPException(status_code=400, detail="Invalid video format")
+    
+    # Check file size (50MB max for video, 10MB for images)
+    max_size = 50 * 1024 * 1024 if media_type == "video" else 10 * 1024 * 1024
+    content = await file.read()
+    if len(content) > max_size:
+        raise HTTPException(status_code=400, detail=f"File too large. Max size: {max_size // (1024*1024)}MB")
+    
+    # Save file
+    ext = file.filename.split(".")[-1] if "." in file.filename else "jpg"
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / filename
+    
+    with open(filepath, "wb") as f:
+        f.write(content)
+    
+    # Store in database
+    media_doc = {
+        "media_id": f"media_{uuid.uuid4().hex[:12]}",
+        "user_id": current_user["user_id"],
+        "filename": filename,
+        "media_type": media_type,
+        "content_type": file.content_type,
+        "size": len(content),
+        "url": f"/api/media/{filename}",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.media.insert_one(media_doc)
+    media_doc.pop("_id", None)
+    
+    return media_doc
+
+@api_router.get("/media/{filename}")
+async def get_media(filename: str):
+    """Serve uploaded media files"""
+    filepath = UPLOAD_DIR / filename
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail="Media not found")
+    
+    with open(filepath, "rb") as f:
+        content = f.read()
+    
+    # Determine content type
+    ext = filename.split(".")[-1].lower()
+    content_types = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+        "gif": "image/gif", "webp": "image/webp", "mp4": "video/mp4",
+        "webm": "video/webm", "mov": "video/quicktime"
+    }
+    content_type = content_types.get(ext, "application/octet-stream")
+    
+    return Response(content=content, media_type=content_type)
+
+# ==================== SOCIAL MEDIA LINKS ====================
+
+@api_router.put("/profile/social-links")
+async def update_social_links(request: Request):
+    """Update user's social media links"""
+    current_user = await get_current_user(request)
+    data = await request.json()
+    
+    social_links = {
+        "twitter": data.get("twitter", ""),
+        "instagram": data.get("instagram", ""),
+        "facebook": data.get("facebook", ""),
+        "tiktok": data.get("tiktok", ""),
+        "snapchat": data.get("snapchat", "")
+    }
+    
+    await db.users.update_one(
+        {"user_id": current_user["user_id"]},
+        {"$set": {"social_links": social_links}}
+    )
+    
+    return {"message": "Social links updated", "social_links": social_links}
+
+@api_router.get("/profile/{user_id}/social-links")
+async def get_social_links(user_id: str, request: Request):
+    """Get user's social media links"""
+    await get_current_user(request)
+    
+    user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "social_links": 1})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"social_links": user.get("social_links", {})}
+
+# ==================== MESSAGE REACTIONS ====================
+
+@api_router.post("/messages/{message_id}/reaction")
+async def add_message_reaction(message_id: str, request: Request):
+    """Add emoji reaction to a message"""
+    current_user = await get_current_user(request)
+    data = await request.json()
+    emoji = data.get("emoji")
+    
+    if not emoji:
+        raise HTTPException(status_code=400, detail="Emoji required")
+    
+    # Valid reactions
+    valid_emojis = ["❤️", "😂", "😮", "😢", "😡", "👍", "👎", "🔥", "💯", "🎉"]
+    if emoji not in valid_emojis:
+        raise HTTPException(status_code=400, detail="Invalid reaction emoji")
+    
+    # Update message with reaction
+    result = await db.messages.update_one(
+        {"message_id": message_id},
+        {"$addToSet": {"reactions": {"user_id": current_user["user_id"], "emoji": emoji, "created_at": datetime.now(timezone.utc).isoformat()}}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    # Send real-time notification
+    message = await db.messages.find_one({"message_id": message_id}, {"_id": 0})
+    if message and message.get("sender_id") != current_user["user_id"]:
+        await manager.send_personal_message({
+            "type": "reaction",
+            "message_id": message_id,
+            "user_id": current_user["user_id"],
+            "emoji": emoji
+        }, message["sender_id"])
+    
+    return {"message": "Reaction added", "emoji": emoji}
+
+@api_router.delete("/messages/{message_id}/reaction")
+async def remove_message_reaction(message_id: str, request: Request):
+    """Remove emoji reaction from a message"""
+    current_user = await get_current_user(request)
+    
+    await db.messages.update_one(
+        {"message_id": message_id},
+        {"$pull": {"reactions": {"user_id": current_user["user_id"]}}}
+    )
+    
+    return {"message": "Reaction removed"}
+
+# ==================== ENHANCED CHAT WITH MEDIA ====================
+
+@api_router.post("/chat/{user_id}/media")
+async def send_media_message(user_id: str, request: Request):
+    """Send a message with media (photo/video/GIF)"""
+    current_user = await get_current_user(request)
+    data = await request.json()
+    
+    conv_id = get_conversation_id(current_user["user_id"], user_id)
+    
+    message = {
+        "message_id": f"msg_{uuid.uuid4().hex[:12]}",
+        "conversation_id": conv_id,
+        "sender_id": current_user["user_id"],
+        "recipient_id": user_id,
+        "content": data.get("content", ""),
+        "message_type": data.get("message_type", "text"),  # text, image, video, gif
+        "media_url": data.get("media_url"),
+        "gif_data": data.get("gif_data"),  # For GIFs: {id, preview_url, original_url}
+        "reactions": [],
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.messages.insert_one(message)
+    message.pop("_id", None)
+    
+    # Send via WebSocket
+    await manager.send_personal_message({"type": "new_message", "message": message}, user_id)
+    
+    # Create notification
+    notification = {
+        "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+        "user_id": user_id,
+        "type": "new_message",
+        "content": f"{current_user['name']} sent you a {'photo' if message['message_type'] == 'image' else 'video' if message['message_type'] == 'video' else 'GIF' if message['message_type'] == 'gif' else 'message'}",
+        "from_user_id": current_user["user_id"],
+        "from_user_name": current_user["name"],
+        "from_user_photo": current_user.get("profile_photo"),
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.notifications.insert_one(notification)
+    notification.pop("_id", None)
+    await manager.send_personal_message({"type": "notification", "notification": notification}, user_id)
+    
+    return message
+
+# ==================== NOTIFICATION PREFERENCES ====================
+
+@api_router.get("/settings/notifications")
+async def get_notification_settings(request: Request):
+    """Get user's notification preferences"""
+    current_user = await get_current_user(request)
+    
+    user = await db.users.find_one({"user_id": current_user["user_id"]}, {"_id": 0, "notification_settings": 1})
+    
+    # Default settings
+    defaults = {
+        "new_matches": True,
+        "new_messages": True,
+        "super_likes": True,
+        "likes_received": True,
+        "profile_views": False,
+        "marketing": False,
+        "sound": True,
+        "vibration": True
+    }
+    
+    return {"settings": user.get("notification_settings", defaults)}
+
+@api_router.put("/settings/notifications")
+async def update_notification_settings(request: Request):
+    """Update user's notification preferences"""
+    current_user = await get_current_user(request)
+    data = await request.json()
+    
+    await db.users.update_one(
+        {"user_id": current_user["user_id"]},
+        {"$set": {"notification_settings": data}}
+    )
+    
+    return {"message": "Notification settings updated", "settings": data}
+
+# ==================== USER ONLINE STATUS ====================
+
+@api_router.get("/users/online-status")
+async def get_online_users(request: Request):
+    """Get online status of matched users"""
+    current_user = await get_current_user(request)
+    
+    # Get matched users
+    matches = await db.mutual_matches.find(
+        {"$or": [{"user_id": current_user["user_id"]}, {"target_user_id": current_user["user_id"]}]}
+    ).to_list(100)
+    
+    matched_user_ids = set()
+    for m in matches:
+        if m["user_id"] == current_user["user_id"]:
+            matched_user_ids.add(m["target_user_id"])
+        else:
+            matched_user_ids.add(m["user_id"])
+    
+    # Get online status
+    users = await db.users.find(
+        {"user_id": {"$in": list(matched_user_ids)}},
+        {"_id": 0, "user_id": 1, "name": 1, "profile_photo": 1, "online": 1, "last_active": 1}
+    ).to_list(100)
+    
+    # Check WebSocket connections for real-time status
+    for user in users:
+        user["online"] = manager.is_online(user["user_id"])
+    
+    return {"users": users}
+
+# ==================== PROFILE VIEWS ====================
+
+@api_router.post("/profile/{user_id}/view")
+async def record_profile_view(user_id: str, request: Request):
+    """Record when a user views another profile"""
+    current_user = await get_current_user(request)
+    
+    if current_user["user_id"] == user_id:
+        return {"message": "Cannot view own profile"}
+    
+    view = {
+        "view_id": f"view_{uuid.uuid4().hex[:12]}",
+        "viewer_id": current_user["user_id"],
+        "viewed_id": user_id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.profile_views.insert_one(view)
+    
+    # Send notification if enabled
+    viewed_user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "notification_settings": 1})
+    if viewed_user and viewed_user.get("notification_settings", {}).get("profile_views", False):
+        notification = {
+            "notification_id": f"notif_{uuid.uuid4().hex[:12]}",
+            "user_id": user_id,
+            "type": "profile_view",
+            "content": f"{current_user['name']} viewed your profile",
+            "from_user_id": current_user["user_id"],
+            "from_user_name": current_user["name"],
+            "from_user_photo": current_user.get("profile_photo"),
+            "read": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.notifications.insert_one(notification)
+        notification.pop("_id", None)
+        await manager.send_personal_message({"type": "notification", "notification": notification}, user_id)
+    
+    return {"message": "View recorded"}
+
+@api_router.get("/profile/views")
+async def get_profile_views(request: Request, days: int = 7):
+    """Get users who viewed your profile"""
+    current_user = await get_current_user(request)
+    
+    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    
+    views = await db.profile_views.find(
+        {"viewed_id": current_user["user_id"], "created_at": {"$gte": since}}
+    ).sort("created_at", -1).to_list(50)
+    
+    # Get viewer details
+    viewer_ids = list(set(v["viewer_id"] for v in views))
+    viewers = await db.users.find(
+        {"user_id": {"$in": viewer_ids}},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(50)
+    
+    viewers_map = {u["user_id"]: u for u in viewers}
+    
+    result = []
+    for view in views:
+        viewer = viewers_map.get(view["viewer_id"])
+        if viewer:
+            result.append({
+                "viewer": viewer,
+                "viewed_at": view["created_at"]
+            })
+    
+    return {"views": result, "count": len(result)}
+
 # ==================== WEBSOCKET ====================
 
 class ConnectionManager:
