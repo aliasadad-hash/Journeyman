@@ -27,6 +27,16 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [x] Match modal with celebration animation
 - [x] Responsive mobile-first design
 - [x] Dark theme with CARTO dark map tiles
+- [x] **Athletic/Casual/Artistic silhouette backgrounds on landing page** (Jan 31, 2026)
+- [x] **Dynamic breathing animations on silhouettes** (Jan 31, 2026)
+
+### Component-Based Architecture (Jan 31, 2026) ✅
+- [x] **Refactored from monolithic 1100+ line App.js to 94 lines**
+- [x] **13 Page components in `/components/pages/`**
+- [x] **3 Shared components in `/components/shared/`**
+- [x] **AuthContext for state management in `/context/`**
+- [x] **Reusable hooks in `/hooks/`**
+- [x] **Utility functions in `/utils/`**
 
 ### Geolocation & Map (Jan 2026)
 - [x] Browser geolocation API integration
@@ -92,8 +102,43 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - **Database**: MongoDB
 - **Auth**: Emergent Auth + JWT
 - **Real-time**: WebSockets
+- **Maps**: Leaflet.js with CARTO dark tiles
 
-## API Endpoints
+## File Structure (After Refactoring)
+```
+/app/frontend/src/
+├── App.js (94 lines - main router)
+├── components/
+│   ├── pages/
+│   │   ├── LandingPage.jsx
+│   │   ├── LoginPage.jsx
+│   │   ├── SignupPage.jsx
+│   │   ├── AuthCallback.jsx
+│   │   ├── OnboardingPage.jsx
+│   │   ├── DashboardPage.jsx
+│   │   ├── MatchesPage.jsx
+│   │   ├── ChatsPage.jsx
+│   │   ├── ChatPage.jsx
+│   │   ├── ProfileViewPage.jsx
+│   │   ├── SchedulesPage.jsx
+│   │   ├── MyProfilePage.jsx
+│   │   ├── NearbyPage.jsx
+│   │   └── index.js
+│   └── shared/
+│       ├── Icons.jsx
+│       ├── BottomNav.jsx
+│       ├── SwipeCard.jsx
+│       └── index.js
+├── context/
+│   └── AuthContext.jsx
+├── hooks/
+│   └── useGeolocation.js
+└── utils/
+    ├── api.js
+    └── constants.js
+```
+
+## API Endpoints (23 total - all passing)
 - Auth: /api/auth/register, /api/auth/login, /api/auth/session, /api/auth/me, /api/auth/logout
 - Profile: /api/profile, /api/profile/photo, /api/profile/verify, /api/profile/{user_id}
 - Discovery: /api/discover, /api/discover/nearby, /api/discover/action, /api/matches, /api/likes-received
@@ -103,8 +148,8 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - Notifications: /api/notifications, /api/notifications/{id}/read, /api/notifications/read-all
 - Misc: /api/icebreakers/prompts
 
-## Test Results
-- Backend: 100% (18/18 tests passed)
+## Test Results (Jan 31, 2026)
+- Backend: 100% (23/23 tests passed)
 - Frontend: 100% (All UI flows working)
 
 ## Prioritized Backlog
@@ -120,6 +165,7 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [ ] Image sharing in chat (frontend)
 - [ ] Voice messages (frontend)
 - [ ] "Vacation Zones" feature
+- [ ] Profile photo upload UI enhancement
 
 ### P2 - Medium Priority
 - [ ] Video profile option
@@ -127,6 +173,7 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [ ] Route matching for truckers
 - [ ] Flight schedule integration
 - [ ] Group chat for travelers
+- [ ] In-app notifications UI component
 
 ### P3 - Future Enhancements
 - [ ] Events/meetups feature
@@ -142,4 +189,4 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - WebSocket endpoint: /ws/{user_id}
 
 ## Last Updated
-January 31, 2026 - Premium MVP Complete with all requested features
+January 31, 2026 - Major refactoring from monolithic to component-based architecture + silhouette backgrounds
