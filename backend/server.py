@@ -599,10 +599,13 @@ async def get_nearby_users(request: Request, radius: int = 50):
             )
             if distance <= radius:
                 user["distance"] = distance
-                # Check if this user is a hot traveler
-                hot_traveler_info = await check_hot_traveler(user["user_id"])
-                user.update(hot_traveler_info)
                 nearby.append(user)
+    
+    # Batch check hot traveler status (fixes N+1 query)
+    nearby_user_ids = [u["user_id"] for u in nearby]
+    hot_traveler_map = await batch_check_hot_travelers(nearby_user_ids)
+    for user in nearby:
+        user.update(hot_traveler_map.get(user["user_id"], {"is_hot_traveler": False}))
     
     # Sort: hot travelers first, then by distance
     nearby.sort(key=lambda x: (not x.get("is_hot_traveler", False), x.get("distance", 999)))
