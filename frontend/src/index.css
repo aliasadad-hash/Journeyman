@@ -348,7 +348,7 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
-/* Silhouette layers */
+/* Silhouette layers - Athletic, Casual, Artistic */
 .silhouette-layer {
   position: absolute;
   top: 0;
@@ -361,37 +361,60 @@ h1, h2, h3, h4, h5, h6 {
 
 .silhouette {
   position: absolute;
-  filter: grayscale(100%) brightness(0.15) contrast(2);
+  filter: grayscale(100%) brightness(0.12) contrast(1.8);
   mix-blend-mode: screen;
   object-fit: cover;
+  object-position: top;
 }
 
+/* Athletic - Right side */
 .silhouette-1 {
-  right: -8%;
-  bottom: -5%;
-  height: 95%;
-  width: auto;
-  opacity: 0.25;
-  transform: scaleX(-1);
-}
-
-.silhouette-2 {
-  left: -12%;
-  bottom: -10%;
-  height: 85%;
-  width: auto;
-  opacity: 0.18;
-}
-
-.silhouette-3 {
-  right: 20%;
+  right: -5%;
   bottom: 0;
-  height: 70%;
+  height: 100%;
   width: auto;
-  opacity: 0.12;
+  opacity: 0.28;
+  transform: scaleX(-1);
+  animation: silhouetteFade1 8s ease-in-out infinite alternate;
 }
 
-/* Gradient overlay for silhouettes */
+/* Artistic - Left side */
+.silhouette-2 {
+  left: -8%;
+  bottom: 0;
+  height: 90%;
+  width: auto;
+  opacity: 0.22;
+  animation: silhouetteFade2 10s ease-in-out infinite alternate;
+}
+
+/* Casual - Center back */
+.silhouette-3 {
+  right: 25%;
+  bottom: 0;
+  height: 80%;
+  width: auto;
+  opacity: 0.15;
+  animation: silhouetteFade3 12s ease-in-out infinite alternate;
+}
+
+/* Subtle breathing animations for dynamic feel */
+@keyframes silhouetteFade1 {
+  0% { opacity: 0.28; transform: scaleX(-1) translateX(0); }
+  100% { opacity: 0.22; transform: scaleX(-1) translateX(-10px); }
+}
+
+@keyframes silhouetteFade2 {
+  0% { opacity: 0.22; transform: translateX(0); }
+  100% { opacity: 0.18; transform: translateX(10px); }
+}
+
+@keyframes silhouetteFade3 {
+  0% { opacity: 0.15; transform: translateY(0); }
+  100% { opacity: 0.12; transform: translateY(-5px); }
+}
+
+/* Gradient overlay for silhouettes - creates depth and mystery */
 .hero-bg .silhouette-layer::after {
   content: '';
   position: absolute;
@@ -400,8 +423,9 @@ h1, h2, h3, h4, h5, h6 {
   right: 0;
   bottom: 0;
   background: 
-    linear-gradient(to right, rgba(11, 17, 32, 0.9) 0%, transparent 30%, transparent 70%, rgba(11, 17, 32, 0.9) 100%),
-    linear-gradient(to bottom, rgba(11, 17, 32, 0.4) 0%, transparent 40%, rgba(11, 17, 32, 0.95) 100%);
+    radial-gradient(ellipse at 50% 100%, transparent 0%, rgba(11, 17, 32, 0.6) 70%),
+    linear-gradient(to right, rgba(11, 17, 32, 0.85) 0%, transparent 25%, transparent 75%, rgba(11, 17, 32, 0.85) 100%),
+    linear-gradient(to bottom, rgba(11, 17, 32, 0.3) 0%, transparent 30%, rgba(11, 17, 32, 0.9) 100%);
   pointer-events: none;
 }
 
