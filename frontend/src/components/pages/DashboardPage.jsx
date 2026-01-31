@@ -13,17 +13,23 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [hotTravelersOnly, setHotTravelersOnly] = useState(false);
+  const [hotTravelersCount, setHotTravelersCount] = useState(0);
   const [matchModal, setMatchModal] = useState(null);
   const { user } = useAuth();
 
-  useEffect(() => { loadUsers(); }, [filters]);
+  useEffect(() => { loadUsers(); }, [filters, hotTravelersOnly]);
 
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const queryParams = filters.length > 0 ? `?professions=${filters.join(',')}` : '';
-      const res = await api.get(`/discover${queryParams}`);
+      const params = new URLSearchParams();
+      if (filters.length > 0) params.set('professions', filters.join(','));
+      if (hotTravelersOnly) params.set('hot_travelers_only', 'true');
+      const queryString = params.toString() ? `?${params.toString()}` : '';
+      const res = await api.get(`/discover${queryString}`);
       setUsers(res.users);
+      setHotTravelersCount(res.hot_travelers_count || 0);
     } catch (err) { 
       console.error('Error:', err); 
     } finally { 
@@ -52,6 +58,18 @@ export const DashboardPage = () => {
         <div className="max-w-lg mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold gradient-text">Discover</h1>
           <div className="flex gap-2">
+            {/* Hot Travelers Toggle */}
+            <button 
+              onClick={() => setHotTravelersOnly(!hotTravelersOnly)} 
+              className={`p-2.5 rounded-lg transition-all flex items-center gap-1.5 ${hotTravelersOnly ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30' : 'bg-[var(--secondary)]'}`} 
+              data-testid="hot-travelers-toggle"
+              title="Show Hot Travelers Only"
+            >
+              <Icons.Flame size={20} />
+              {hotTravelersCount > 0 && (
+                <span className="text-xs font-bold">{hotTravelersCount}</span>
+              )}
+            </button>
             <button onClick={() => navigate('/nearby')} className="p-2.5 rounded-lg bg-[var(--secondary)] hover:bg-[var(--brand-gold)]/20 transition-colors" data-testid="map-btn">
               <Icons.Map size={20} />
             </button>
@@ -69,6 +87,20 @@ export const DashboardPage = () => {
             ))}
           </div>
         )}
+        {/* Hot Travelers Banner */}
+        {hotTravelersCount > 0 && !hotTravelersOnly && (
+          <div className="max-w-lg mx-auto mt-3">
+            <button 
+              onClick={() => setHotTravelersOnly(true)}
+              className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 flex items-center justify-center gap-2 text-orange-400 hover:from-orange-500/30 hover:to-red-500/30 transition-all"
+              data-testid="hot-travelers-banner"
+            >
+              <Icons.Flame size={18} />
+              <span className="font-semibold">{hotTravelersCount} Hot Travelers in your area!</span>
+              <Icons.ChevronRight size={18} />
+            </button>
+          </div>
+        )}
       </header>
 
       <main className="flex flex-col items-center justify-center p-4 pt-8 min-h-[70vh]">
@@ -77,10 +109,19 @@ export const DashboardPage = () => {
         ) : users.length === 0 ? (
           <div className="empty-state animate-scale-in">
             <div className="empty-state-icon">
-              <Icons.Search size={40} className="text-[var(--muted-foreground)]" />
+              {hotTravelersOnly ? <Icons.Flame size={40} className="text-orange-400" /> : <Icons.Search size={40} className="text-[var(--muted-foreground)]" />}
             </div>
-            <h3 className="text-2xl mb-3 text-[var(--brand-gold)]">No More Profiles</h3>
-            <p className="text-[var(--muted-foreground)] text-lg">Check back later or adjust your filters</p>
+            <h3 className="text-2xl mb-3 text-[var(--brand-gold)]">
+              {hotTravelersOnly ? 'No Hot Travelers Right Now' : 'No More Profiles'}
+            </h3>
+            <p className="text-[var(--muted-foreground)] text-lg">
+              {hotTravelersOnly ? 'Check back later for travelers passing through!' : 'Check back later or adjust your filters'}
+            </p>
+            {hotTravelersOnly && (
+              <button onClick={() => setHotTravelersOnly(false)} className="btn-secondary mt-4">
+                Show All Users
+              </button>
+            )}
           </div>
         ) : (
           <>
