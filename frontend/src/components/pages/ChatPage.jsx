@@ -5,6 +5,7 @@ import { api } from '../../utils/api';
 import { GifPicker } from '../shared/GifPicker';
 import { EmojiPicker, ReactionBar } from '../shared/EmojiPicker';
 import { MediaUploader } from '../shared/MediaUploader';
+import { AIIceBreakers, AICompatibilityScore } from '../shared/AIFeatures';
 import * as Icons from '../shared/Icons';
 
 export const ChatPage = () => {
