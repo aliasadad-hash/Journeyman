@@ -92,18 +92,30 @@ export const SwipeCard = ({ profile, onSwipe, isTop }) => {
         </div>
       )}
 
+      {/* Hot Traveler Badge */}
+      {profile.is_hot_traveler && (
+        <div className="hot-traveler-badge" data-testid="hot-traveler-badge">
+          <Icons.Flame size={16} /> HOT TRAVELER
+        </div>
+      )}
+
       <div className="swipe-indicator swipe-indicator-like" style={{ opacity: swipeAction === 'like' ? 1 : 0 }}>LIKE</div>
       <div className="swipe-indicator swipe-indicator-nope" style={{ opacity: swipeAction === 'nope' ? 1 : 0 }}>NOPE</div>
       <div className="swipe-indicator swipe-indicator-super" style={{ opacity: swipeAction === 'super' ? 1 : 0 }}>SUPER LIKE</div>
 
       <div className="swipe-card-content">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
           <span className={`badge profession-${profile.profession}`}>
             <profession.icon size={14} /> {profession.label}
           </span>
           {profile.distance && (
             <span className="badge badge-gold">
               <Icons.MapPin size={14} /> {profile.distance} mi
+            </span>
+          )}
+          {profile.is_hot_traveler && profile.traveling_to && (
+            <span className="hot-traveler-indicator">
+              <Icons.Flame size={12} /> {profile.traveling_to}
             </span>
           )}
         </div>
