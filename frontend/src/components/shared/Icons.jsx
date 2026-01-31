@@ -182,3 +182,10 @@ export const List = ({ size = 24 }) => (
     <line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>
   </svg>
 );
+
+export const Flame = ({ size = 24 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="0">
+    <path d="M12 2c1 3 2.5 3.5 3.5 4.5A5 5 0 0 1 17 10c0 2-2 4.5-5 4.5S7 12 7 10a5 5 0 0 1 1.5-3.5C9.5 5.5 11 5 12 2Z"/>
+    <path d="M12 10c.6 1 1.5 1.5 2 2a2.5 2.5 0 0 1 .5 1.5c0 1-1 2.5-2.5 2.5S9.5 14.5 9.5 13.5A2.5 2.5 0 0 1 10 12c.5-.5 1.4-1 2-2Z" fill="var(--brand-gold)"/>
+  </svg>
+);
