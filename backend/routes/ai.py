@@ -202,3 +202,78 @@ async def get_batch_compatibility(request: Request, user_ids: str):
                 })
     
     return {"compatibilities": results}
+
+
+class FirstMessageRequest(BaseModel):
+    tone: str = "friendly"  # friendly, flirty, witty, sincere
+
+
+class FirstMessageResponse(BaseModel):
+    message: str
+    talking_points: List[str]
+    confidence_score: int
+    why_it_works: str
+    their_name: str
+    shared_interests: List[str]
+
+
+@router.post("/first-message/{user_id}", response_model=FirstMessageResponse)
+async def generate_first_message(user_id: str, request: Request, body: FirstMessageRequest):
+    """
+    Generate the perfect AI-powered first message for a new match.
+    
+    Combines compatibility analysis + ice breaker techniques to craft
+    a personalized opening message that's likely to get a response.
+    
+    Tones available: friendly, flirty, witty, sincere
+    """
+    current_user = await get_current_user(request)
+    
+    if current_user["user_id"] == user_id:
+        raise HTTPException(status_code=400, detail="Cannot message yourself")
+    
+    # Validate tone
+    valid_tones = ["friendly", "flirty", "witty", "sincere"]
+    if body.tone not in valid_tones:
+        raise HTTPException(status_code=400, detail=f"Tone must be one of: {', '.join(valid_tones)}")
+    
+    # Get target user profile
+    target_user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if they're matched (both liked each other)
+    my_like = await db.matches.find_one({
+        "user_id": current_user["user_id"],
+        "target_user_id": user_id,
+        "action": {"$in": ["like", "super_like"]}
+    })
+    their_like = await db.matches.find_one({
+        "user_id": user_id,
+        "target_user_id": current_user["user_id"],
+        "action": {"$in": ["like", "super_like"]}
+    })
+    
+    if not (my_like and their_like):
+        raise HTTPException(status_code=403, detail="You can only generate messages for matches")
+    
+    try:
+        result = await first_message_generator.generate_first_message(
+            your_profile=current_user,
+            their_profile=target_user,
+            tone=body.tone
+        )
+        
+        return FirstMessageResponse(
+            message=result["message"],
+            talking_points=result["talking_points"],
+            confidence_score=result["confidence_score"],
+            why_it_works=result["why_it_works"],
+            their_name=result["their_name"],
+            shared_interests=result["shared_interests"]
+        )
+    
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to generate message. Please try again.")
