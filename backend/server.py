@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Query, WebSocket, WebSocketDisconnect, UploadFile, File
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, Query, WebSocket, WebSocketDisconnect, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -14,6 +14,7 @@ import httpx
 import json
 import base64
 import random
+import asyncio
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,6 +26,7 @@ db = client[os.environ['DB_NAME']]
 
 # Environment-based configuration
 AUTH_SERVICE_URL = os.environ.get('AUTH_SERVICE_URL', 'https://demobackend.emergentagent.com')
+GIPHY_API_KEY = os.environ.get('GIPHY_API_KEY', 'GlVGYHkr3WSBnllca54iNt0yFbjz7L65')  # Free public beta key
 CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '').split(',') if os.environ.get('CORS_ORIGINS') else [
     "http://localhost:3000",
     "https://localhost:3000"
@@ -39,6 +41,56 @@ api_router = APIRouter(prefix="/api")
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# WebSocket connection manager for real-time chat
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, WebSocket] = {}
+        self.user_status: Dict[str, dict] = {}
+    
+    async def connect(self, websocket: WebSocket, user_id: str):
+        await websocket.accept()
+        self.active_connections[user_id] = websocket
+        self.user_status[user_id] = {"online": True, "last_seen": datetime.now(timezone.utc).isoformat()}
+        # Broadcast online status
+        await self.broadcast_status(user_id, True)
+    
+    def disconnect(self, user_id: str):
+        if user_id in self.active_connections:
+            del self.active_connections[user_id]
+        self.user_status[user_id] = {"online": False, "last_seen": datetime.now(timezone.utc).isoformat()}
+    
+    async def send_personal_message(self, message: dict, user_id: str):
+        if user_id in self.active_connections:
+            try:
+                await self.active_connections[user_id].send_json(message)
+            except:
+                self.disconnect(user_id)
+    
+    async def broadcast_status(self, user_id: str, online: bool):
+        status_msg = {"type": "status_update", "user_id": user_id, "online": online, "timestamp": datetime.now(timezone.utc).isoformat()}
+        for uid, ws in list(self.active_connections.items()):
+            if uid != user_id:
+                try:
+                    await ws.send_json(status_msg)
+                except:
+                    pass
+    
+    async def send_typing_indicator(self, from_user: str, to_user: str, is_typing: bool):
+        if to_user in self.active_connections:
+            try:
+                await self.active_connections[to_user].send_json({
+                    "type": "typing",
+                    "user_id": from_user,
+                    "is_typing": is_typing
+                })
+            except:
+                pass
+    
+    def is_online(self, user_id: str) -> bool:
+        return user_id in self.active_connections
+
+manager = ConnectionManager()
 
 # Icebreaker prompts database
 ICEBREAKER_PROMPTS = [
