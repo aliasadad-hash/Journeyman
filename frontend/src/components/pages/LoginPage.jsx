@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
+import { SexyBackground } from '../shared/SexyBackground';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -33,8 +34,9 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center p-6" data-testid="login-page">
-      <div className="w-full max-w-md animate-scale-in">
+    <div className="min-h-screen hero-bg flex flex-col items-center justify-center p-6 relative" data-testid="login-page">
+      <SexyBackground />
+      <div className="w-full max-w-md animate-scale-in relative z-10">
         <h1 className="text-5xl font-bold text-center mb-3 gradient-text">Welcome Back</h1>
         <p className="text-center text-[var(--muted-foreground)] mb-10 text-lg">Sign in to continue your journey</p>
         
