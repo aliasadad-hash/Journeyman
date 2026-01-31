@@ -182,14 +182,26 @@ export const NearbyPage = () => {
                       {u.online && <span className="online-indicator" />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg">{u.name}{u.age && `, ${u.age}`}</h3>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-lg">{u.name}{u.age && `, ${u.age}`}</h3>
+                        {u.is_hot_traveler && (
+                          <span className="hot-traveler-indicator">
+                            <Icons.Flame size={12} /> Hot
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <span className={`badge profession-${u.profession}`}>
                           <profession.icon size={12} /> {profession.label}
                         </span>
                         {u.distance && (
                           <span className="text-sm text-[var(--muted-foreground)]">
                             {u.distance} mi
+                          </span>
+                        )}
+                        {u.is_hot_traveler && u.traveling_to && (
+                          <span className="text-xs text-orange-400">
+                            → {u.traveling_to}
                           </span>
                         )}
                       </div>
