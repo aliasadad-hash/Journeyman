@@ -108,6 +108,11 @@ export const ProfileViewPage = () => {
             </div>
           </div>
         )}
+        
+        {/* AI Compatibility Score */}
+        <div className="pt-4 border-t border-[var(--secondary)]">
+          <AICompatibilityScore userId={profileId} userName={profile.name?.split(' ')[0] || 'User'} />
+        </div>
       </div>
     </div>
   );
