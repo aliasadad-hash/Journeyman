@@ -48,17 +48,25 @@ const AppRoutes = () => {
     );
   }
 
+  // Check if this is an OAuth callback (has session_id in hash)
+  const isOAuthCallback = window.location.hash.includes('session_id=');
+
   return (
     <Routes>
       {/* Public routes */}
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
       <Route path="/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
-      <Route path="/dashboard" element={<AuthCallback />} />
+
+      {/* OAuth callback and Dashboard share same route */}
+      <Route path="/dashboard" element={
+        isOAuthCallback ? <AuthCallback /> : 
+        user ? <DashboardPage /> : 
+        <Navigate to="/login" replace />
+      } />
 
       {/* Protected routes */}
       <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/nearby" element={<ProtectedRoute><NearbyPage /></ProtectedRoute>} />
       <Route path="/matches" element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} />
       <Route path="/chats" element={<ProtectedRoute><ChatsPage /></ProtectedRoute>} />
