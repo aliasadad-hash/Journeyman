@@ -12,11 +12,26 @@ export const LandingPage = () => {
 
   return (
     <div className="min-h-screen hero-bg flex flex-col" data-testid="landing-page">
-      {/* Silhouette layers - athletic, casual, artistic */}
+      {/* Sexy silhouette layers - muscular fit men */}
       <div className="silhouette-layer">
-        <img src="https://images.unsplash.com/photo-1754476218612-c29258cfc01a?w=800&q=80" alt="" className="silhouette silhouette-1" />
-        <img src="https://images.unsplash.com/photo-1658502527045-2d523d34da0e?w=800&q=80" alt="" className="silhouette silhouette-2" />
-        <img src="https://images.unsplash.com/photo-1754476195695-9a39e974bfd2?w=800&q=80" alt="" className="silhouette silhouette-3" />
+        {/* Right side - muscular bearded man */}
+        <img 
+          src="https://images.unsplash.com/photo-1738725602689-f260e7f528cd?w=800&q=80" 
+          alt="" 
+          className="silhouette silhouette-right" 
+        />
+        {/* Left side - shirtless athletic man */}
+        <img 
+          src="https://images.unsplash.com/flagged/photo-1568650247635-0e4af0ea4968?w=800&q=80" 
+          alt="" 
+          className="silhouette silhouette-left" 
+        />
+        {/* Center back - tattooed muscular man */}
+        <img 
+          src="https://images.unsplash.com/photo-1754475172820-6053bbed3b25?w=800&q=80" 
+          alt="" 
+          className="silhouette silhouette-center" 
+        />
       </div>
       
       <header className="p-6 flex justify-between items-center relative z-10">
