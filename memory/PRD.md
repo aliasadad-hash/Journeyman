@@ -104,6 +104,21 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [x] New message notifications
 - [x] Unread count badge
 - [x] Mark as read functionality
+- [x] **Notification dropdown in header** (Jan 31, 2026)
+- [x] **Notification settings page with toggles** (Jan 31, 2026)
+
+### Social Media Linking (Jan 31, 2026)
+- [x] **Social links editor modal on profile page**
+- [x] **Twitter/X profile linking**
+- [x] **Instagram profile linking**
+- [x] **Facebook profile linking**
+- [x] **TikTok profile linking**
+- [x] **Snapchat profile linking**
+
+### Settings Page (Jan 31, 2026)
+- [x] **Notification preferences toggles**
+- [x] **Account settings**
+- [x] **Privacy settings**
 
 ## Technical Stack
 - **Frontend**: React.js with Tailwind CSS
