@@ -88,6 +88,9 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [x] Image/GIF/Voice message types (backend ready)
 - [x] Conversation list with unread counts
 - [x] WebSocket support for live updates
+- [x] **GIF picker with GIPHY integration** (Jan 31, 2026)
+- [x] **Emoji picker with categories** (Jan 31, 2026)
+- [x] **Message reactions (emoji reactions on messages)** (Jan 31, 2026)
 
 ### Travel Schedules (Jan 2026)
 - [x] Create travel schedule with destination, dates
