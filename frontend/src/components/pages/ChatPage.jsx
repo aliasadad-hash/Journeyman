@@ -235,10 +235,28 @@ export const ChatPage = () => {
             <div className="mb-6 space-y-4">
               <div className="text-center text-[var(--text-secondary)] py-4">
                 <p className="text-lg mb-2">Start a conversation with {otherUser.name?.split(' ')[0]}!</p>
-                <p className="text-sm opacity-75">Need some help breaking the ice?</p>
+                <p className="text-sm opacity-75">Let AI help you make a great first impression</p>
               </div>
-              <AIIceBreakers matchUserId={userId} matchName={otherUser.name?.split(' ')[0] || 'your match'} />
-              <AICompatibilityScore userId={userId} userName={otherUser.name?.split(' ')[0] || 'User'} />
+              
+              {/* AI First Message - Primary CTA */}
+              <AIFirstMessage 
+                matchUserId={userId} 
+                matchName={otherUser.name?.split(' ')[0] || 'your match'}
+                onSendMessage={(msg) => {
+                  setMessage(msg);
+                  // Auto-send the message
+                  setTimeout(() => {
+                    const sendBtn = document.querySelector('[data-testid="send-message-btn"]');
+                    if (sendBtn) sendBtn.click();
+                  }, 100);
+                }}
+              />
+              
+              {/* Compatibility & Ice Breakers as secondary options */}
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <AICompatibilityScore userId={userId} userName={otherUser.name?.split(' ')[0] || 'User'} />
+                <AIIceBreakers matchUserId={userId} matchName={otherUser.name?.split(' ')[0] || 'your match'} />
+              </div>
             </div>
           )}
           
