@@ -751,6 +751,8 @@ async def create_schedule(request: Request, schedule_data: TravelScheduleCreate)
     doc["created_at"] = doc["created_at"].isoformat()
     await db.schedules.insert_one(doc)
     
+    # Remove MongoDB's _id before returning
+    doc.pop("_id", None)
     return doc
 
 @api_router.delete("/schedules/{schedule_id}")
