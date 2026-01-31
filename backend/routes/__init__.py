@@ -6,6 +6,7 @@ from .chat import router as chat_router
 from .schedules import router as schedules_router
 from .notifications import router as notifications_router
 from .media import router as media_router
+from .ai import router as ai_router
 
 __all__ = [
     "auth_router",
@@ -14,5 +15,6 @@ __all__ = [
     "chat_router",
     "schedules_router",
     "notifications_router",
-    "media_router"
+    "media_router",
+    "ai_router"
 ]
