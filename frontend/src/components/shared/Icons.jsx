@@ -210,9 +210,3 @@ export const MessageCircle = ({ size = 24 }) => (
     <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
   </svg>
 );
-
-export const Send = ({ size = 24 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-    <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-  </svg>
-);
