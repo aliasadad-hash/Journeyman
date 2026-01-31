@@ -44,6 +44,26 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [x] **Reusable hooks in `/hooks/`**
 - [x] **Utility functions in `/utils/`**
 
+### Backend Modular Architecture (Jan 31, 2026) ✅
+- [x] **Refactored from monolithic 1564-line server.py to 163 lines**
+- [x] **7 Route modules in `/routes/`**: auth, profile, discovery, chat, schedules, notifications, media, ai
+- [x] **Pydantic models in `/models/schemas.py`**
+- [x] **Database & WebSocket services in `/services/`**
+- [x] **Utility functions in `/utils/helpers.py`**
+
+### AI-Powered Features (Jan 31, 2026) ✅ 
+Using Emergent LLM Key for all AI integrations:
+- [x] **Bio Generation (GPT-5.2)** - Auto-generate attractive profile bios
+  - 4 styles: confident, playful, mysterious, romantic
+  - Endpoint: POST /api/ai/generate-bio
+- [x] **Ice Breakers (Claude Sonnet 4.5)** - Conversation starters for matches
+  - Returns 3 personalized openers based on shared interests
+  - Endpoint: GET /api/ai/ice-breakers/{user_id}
+- [x] **Smart Matching (Gemini 3 Flash)** - AI-powered compatibility scoring
+  - Returns score (0-100), reasons, and conversation topics
+  - Endpoint: GET /api/ai/compatibility/{user_id}
+  - Batch endpoint: GET /api/ai/compatibility-batch
+
 ### Geolocation & Map (Jan 2026)
 - [x] Browser geolocation API integration
 - [x] Real-time location tracking with permission handling
