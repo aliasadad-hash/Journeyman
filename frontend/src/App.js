@@ -142,9 +142,9 @@ function LandingPage() {
     <div className="min-h-screen hero-bg flex flex-col" data-testid="landing-page">
       {/* Silhouette layers */}
       <div className="silhouette-layer">
-        <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&q=80" alt="" className="silhouette silhouette-1" />
-        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80" alt="" className="silhouette silhouette-2" />
-        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80" alt="" className="silhouette silhouette-3" />
+        <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=1200&q=80" alt="" className="silhouette silhouette-1" />
+        <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c149a?w=1200&q=80" alt="" className="silhouette silhouette-2" />
+        <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=1200&q=80" alt="" className="silhouette silhouette-3" />
       </div>
       
       <header className="p-6 flex justify-between items-center relative z-10">
