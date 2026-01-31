@@ -500,6 +500,26 @@ async def discover_users(
     
     return {"users": users, "count": len(users)}
 
+async def check_hot_traveler(user_id: str, target_lat: float = None, target_lon: float = None) -> dict:
+    """Check if user is a hot traveler (has active travel schedule in the area)"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Find active schedules (start_date <= today <= end_date)
+    active_schedule = await db.schedules.find_one({
+        "user_id": user_id,
+        "start_date": {"$lte": today},
+        "end_date": {"$gte": today}
+    }, {"_id": 0})
+    
+    if active_schedule:
+        return {
+            "is_hot_traveler": True,
+            "traveling_to": active_schedule.get("destination"),
+            "trip_title": active_schedule.get("title"),
+            "trip_ends": active_schedule.get("end_date")
+        }
+    return {"is_hot_traveler": False}
+
 @api_router.get("/discover/nearby")
 async def get_nearby_users(request: Request, radius: int = 50):
     """Get users within a radius (miles) for map view"""
@@ -525,10 +545,16 @@ async def get_nearby_users(request: Request, radius: int = 50):
             )
             if distance <= radius:
                 user["distance"] = distance
+                # Check if this user is a hot traveler
+                hot_traveler_info = await check_hot_traveler(user["user_id"])
+                user.update(hot_traveler_info)
                 nearby.append(user)
     
-    nearby.sort(key=lambda x: x.get("distance", 999))
-    return {"users": nearby, "count": len(nearby)}
+    # Sort: hot travelers first, then by distance
+    nearby.sort(key=lambda x: (not x.get("is_hot_traveler", False), x.get("distance", 999)))
+    
+    hot_count = sum(1 for u in nearby if u.get("is_hot_traveler"))
+    return {"users": nearby, "count": len(nearby), "hot_travelers_count": hot_count}
 
 @api_router.post("/discover/action")
 async def match_action(request: Request, target_user_id: str, action: str):
