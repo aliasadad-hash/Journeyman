@@ -1,0 +1,251 @@
+"""AI-powered features using Emergent LLM integrations."""
+import os
+import uuid
+import logging
+from typing import List, Dict, Optional
+from emergentintegrations.llm.chat import LlmChat, UserMessage
+
+logger = logging.getLogger(__name__)
+
+# Get API key from environment
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+
+
+class AIBioGenerator:
+    """Generate attractive dating profile bios using GPT-5.2."""
+    
+    def __init__(self):
+        self.api_key = EMERGENT_LLM_KEY
+    
+    async def generate_bio(
+        self,
+        name: str,
+        profession: str,
+        interests: List[str],
+        age: int = None,
+        style: str = "confident"
+    ) -> str:
+        """
+        Generate an attractive dating profile bio.
+        
+        Args:
+            name: User's first name
+            profession: User's profession (trucker, airline, military, etc.)
+            interests: List of user interests
+            age: User's age (optional)
+            style: Bio style - "confident", "playful", "mysterious", "romantic"
+        
+        Returns:
+            Generated bio text
+        """
+        if not self.api_key:
+            raise ValueError("EMERGENT_LLM_KEY not configured")
+        
+        chat = LlmChat(
+            api_key=self.api_key,
+            session_id=f"bio_gen_{uuid.uuid4().hex[:8]}",
+            system_message="""You are an expert dating profile writer for Journeyman, a premium dating app for travelers.
+            Write compelling, authentic bios that highlight the unique lifestyle of men who travel for work or adventure.
+            Keep bios between 100-200 characters. Be creative but genuine. Avoid clichés.
+            The bio should make the reader want to swipe right and start a conversation."""
+        ).with_model("openai", "gpt-5.2")
+        
+        interests_str = ", ".join(interests) if interests else "traveling, meeting new people"
+        age_str = f"Age: {age}. " if age else ""
+        
+        prompt = f"""Write a {style} dating profile bio for:
+Name: {name}
+Profession: {profession}
+{age_str}Interests: {interests_str}
+
+The bio should feel authentic and showcase their adventurous traveler lifestyle.
+Write ONLY the bio text, nothing else. No quotes around it."""
+        
+        user_message = UserMessage(text=prompt)
+        
+        try:
+            response = await chat.send_message(user_message)
+            return response.strip().strip('"').strip("'")
+        except Exception as e:
+            logger.error(f"Bio generation error: {e}")
+            raise
+
+
+class AIIceBreakerGenerator:
+    """Generate conversation ice breakers using Claude."""
+    
+    def __init__(self):
+        self.api_key = EMERGENT_LLM_KEY
+    
+    async def generate_ice_breakers(
+        self,
+        your_profile: Dict,
+        their_profile: Dict,
+        count: int = 3
+    ) -> List[str]:
+        """
+        Generate personalized conversation starters.
+        
+        Args:
+            your_profile: Current user's profile data
+            their_profile: Match's profile data
+            count: Number of ice breakers to generate
+        
+        Returns:
+            List of ice breaker messages
+        """
+        if not self.api_key:
+            raise ValueError("EMERGENT_LLM_KEY not configured")
+        
+        chat = LlmChat(
+            api_key=self.api_key,
+            session_id=f"icebreaker_{uuid.uuid4().hex[:8]}",
+            system_message="""You are a witty conversation expert for Journeyman, a dating app for travelers.
+            Generate creative, personalized ice breakers that reference shared interests or unique profile details.
+            Messages should be friendly, not too forward, and invite a response.
+            Keep each message under 100 characters. Be playful but respectful."""
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        
+        your_interests = ", ".join(your_profile.get("interests", [])) or "traveling"
+        their_interests = ", ".join(their_profile.get("interests", [])) or "traveling"
+        their_profession = their_profile.get("profession", "traveler")
+        their_bio = their_profile.get("bio", "")
+        their_name = their_profile.get("name", "").split()[0] if their_profile.get("name") else "them"
+        
+        prompt = f"""Generate {count} unique ice breaker messages to start a conversation with someone.
+
+Their profile:
+- Name: {their_name}
+- Profession: {their_profession}
+- Interests: {their_interests}
+- Bio: {their_bio[:100] if their_bio else 'Not provided'}
+
+Your interests: {your_interests}
+
+Write {count} different opening messages. Number them 1-{count}.
+Each should be short, engaging, and reference something from their profile or shared interests.
+Do NOT use generic openers like "Hey" or "How are you"."""
+        
+        user_message = UserMessage(text=prompt)
+        
+        try:
+            response = await chat.send_message(user_message)
+            
+            # Parse numbered responses
+            lines = response.strip().split('\n')
+            ice_breakers = []
+            for line in lines:
+                line = line.strip()
+                if line and line[0].isdigit():
+                    # Remove number prefix
+                    text = line.split('.', 1)[-1].strip() if '.' in line else line[2:].strip()
+                    text = text.strip('"').strip("'")
+                    if text:
+                        ice_breakers.append(text)
+            
+            return ice_breakers[:count]
+        except Exception as e:
+            logger.error(f"Ice breaker generation error: {e}")
+            raise
+
+
+class AISmartMatcher:
+    """Calculate AI-powered compatibility scores using Gemini."""
+    
+    def __init__(self):
+        self.api_key = EMERGENT_LLM_KEY
+    
+    async def calculate_compatibility(
+        self,
+        user1_profile: Dict,
+        user2_profile: Dict
+    ) -> Dict:
+        """
+        Calculate compatibility score between two users.
+        
+        Args:
+            user1_profile: First user's profile
+            user2_profile: Second user's profile
+        
+        Returns:
+            Dict with score (0-100) and reasons
+        """
+        if not self.api_key:
+            raise ValueError("EMERGENT_LLM_KEY not configured")
+        
+        chat = LlmChat(
+            api_key=self.api_key,
+            session_id=f"match_{uuid.uuid4().hex[:8]}",
+            system_message="""You are a compatibility analyst for Journeyman, a dating app for travelers.
+            Analyze two profiles and provide a compatibility score with reasoning.
+            Consider: shared interests, lifestyle compatibility (both travelers), profession compatibility,
+            location/travel patterns, and potential conversation topics.
+            Be realistic but optimistic. Travelers often connect well due to shared lifestyle understanding."""
+        ).with_model("gemini", "gemini-3-flash-preview")
+        
+        def format_profile(p: Dict, label: str) -> str:
+            return f"""{label}:
+- Profession: {p.get('profession', 'Unknown')}
+- Interests: {', '.join(p.get('interests', [])) or 'Not specified'}
+- Bio: {p.get('bio', 'Not provided')[:150]}
+- Location: {p.get('location', 'Unknown')}
+- Age: {p.get('age', 'Unknown')}"""
+        
+        prompt = f"""Analyze compatibility between these two users:
+
+{format_profile(user1_profile, "User 1")}
+
+{format_profile(user2_profile, "User 2")}
+
+Provide your analysis in this EXACT format:
+SCORE: [number 0-100]
+REASONS:
+- [reason 1]
+- [reason 2]
+- [reason 3]
+CONVERSATION_TOPICS:
+- [topic 1]
+- [topic 2]"""
+        
+        user_message = UserMessage(text=prompt)
+        
+        try:
+            response = await chat.send_message(user_message)
+            
+            # Parse response
+            result = {
+                "score": 75,  # Default
+                "reasons": [],
+                "conversation_topics": []
+            }
+            
+            lines = response.strip().split('\n')
+            current_section = None
+            
+            for line in lines:
+                line = line.strip()
+                if line.startswith("SCORE:"):
+                    try:
+                        score_text = line.replace("SCORE:", "").strip()
+                        result["score"] = min(100, max(0, int(float(score_text))))
+                    except:
+                        pass
+                elif line == "REASONS:":
+                    current_section = "reasons"
+                elif line == "CONVERSATION_TOPICS:":
+                    current_section = "conversation_topics"
+                elif line.startswith("-") and current_section:
+                    text = line[1:].strip()
+                    if text:
+                        result[current_section].append(text)
+            
+            return result
+        except Exception as e:
+            logger.error(f"Compatibility calculation error: {e}")
+            raise
+
+
+# Singleton instances
+bio_generator = AIBioGenerator()
+ice_breaker_generator = AIIceBreakerGenerator()
+smart_matcher = AISmartMatcher()
