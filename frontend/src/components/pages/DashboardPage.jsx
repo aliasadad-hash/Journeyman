@@ -5,6 +5,7 @@ import { api } from '../../utils/api';
 import { PROFESSIONS } from '../../utils/constants';
 import { BottomNav } from '../shared/BottomNav';
 import { SwipeCard } from '../shared/SwipeCard';
+import { NotificationDropdown } from '../shared/NotificationDropdown';
 import * as Icons from '../shared/Icons';
 
 export const DashboardPage = () => {
@@ -16,9 +17,11 @@ export const DashboardPage = () => {
   const [hotTravelersOnly, setHotTravelersOnly] = useState(false);
   const [hotTravelersCount, setHotTravelersCount] = useState(0);
   const [matchModal, setMatchModal] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { user } = useAuth();
 
-  useEffect(() => { loadUsers(); }, [filters, hotTravelersOnly]);
+  useEffect(() => { loadUsers(); loadUnreadCount(); }, [filters, hotTravelersOnly]);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -34,6 +37,15 @@ export const DashboardPage = () => {
       console.error('Error:', err); 
     } finally { 
       setLoading(false); 
+    }
+  };
+
+  const loadUnreadCount = async () => {
+    try {
+      const res = await api.get('/notifications/unread-count');
+      setUnreadCount(res.count || 0);
+    } catch (err) {
+      console.error('Error loading unread count:', err);
     }
   };
 
