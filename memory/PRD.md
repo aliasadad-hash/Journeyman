@@ -29,6 +29,12 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [x] Dark theme with CARTO dark map tiles
 - [x] **Athletic/Casual/Artistic silhouette backgrounds on landing page** (Jan 31, 2026)
 - [x] **Dynamic breathing animations on silhouettes** (Jan 31, 2026)
+- [x] **🔥 Hot Travelers Nearby feature** (Jan 31, 2026)
+  - Orange flame badge on user cards with active travel schedules
+  - "Hot Travelers in your area!" banner with count
+  - Flame toggle button to filter hot travelers only
+  - Destination display on hot traveler cards
+  - Hot travelers prioritized in discovery results
 
 ### Component-Based Architecture (Jan 31, 2026) ✅
 - [x] **Refactored from monolithic 1100+ line App.js to 94 lines**
