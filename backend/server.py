@@ -779,12 +779,13 @@ async def get_likes_received(request: Request):
 async def get_conversations(request: Request):
     current_user = await get_current_user(request)
     
+    # Get messages with pagination limit to prevent unbounded query
     messages = await db.messages.find({
         "$or": [
             {"sender_id": current_user["user_id"]},
             {"recipient_id": current_user["user_id"]}
         ]
-    }, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    }, {"_id": 0}).sort("created_at", -1).limit(200).to_list(200)
     
     conversations = {}
     for msg in messages:
