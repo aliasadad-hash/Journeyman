@@ -5,6 +5,7 @@ import { api } from '../../utils/api';
 import { PROFESSIONS } from '../../utils/constants';
 import { BottomNav } from '../shared/BottomNav';
 import { SocialLinksEditor, SocialLinksDisplay } from '../shared/SocialLinks';
+import { AIBioGenerator } from '../shared/AIFeatures';
 import * as Icons from '../shared/Icons';
 
 export const MyProfilePage = () => {
