@@ -63,6 +63,11 @@ Using Emergent LLM Key for all AI integrations:
   - Returns score (0-100), reasons, and conversation topics
   - Endpoint: GET /api/ai/compatibility/{user_id}
   - Batch endpoint: GET /api/ai/compatibility-batch
+- [x] **AI First Message (GPT-5.2)** - Perfect opening message generator ✨ NEW
+  - 4 tones: friendly, flirty, witty, sincere
+  - Returns message + confidence score + talking points + why it works
+  - Combines compatibility analysis with personalized messaging
+  - Endpoint: POST /api/ai/first-message/{user_id}
 
 ### Geolocation & Map (Jan 2026)
 - [x] Browser geolocation API integration
