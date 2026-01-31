@@ -26,6 +26,20 @@ Build a premium dating app named "Journeyman" for men who travel frequently for 
 - [x] Photo gallery with dot indicators
 - [x] Match modal with celebration animation
 - [x] Responsive mobile-first design
+- [x] Dark theme with CARTO dark map tiles
+
+### Geolocation & Map (Jan 2026)
+- [x] Browser geolocation API integration
+- [x] Real-time location tracking with permission handling
+- [x] Interactive Leaflet map with dark theme tiles
+- [x] User pins with profile photos as markers
+- [x] Custom "You are here" pulsing marker
+- [x] Distance calculation using Haversine formula
+- [x] Nearby users view (within 50 miles)
+- [x] Map/List toggle view modes
+- [x] Popup profiles with "View Profile" action
+- [x] Online status indicators on map pins
+- [x] Automatic profile location updates
 
 ### Authentication (Jan 2026)
 - [x] Email/password registration and login
