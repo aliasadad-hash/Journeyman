@@ -144,6 +144,22 @@ export const NearbyPage = () => {
                       />
                       <h4>{u.name}{u.age && `, ${u.age}`}</h4>
                       <p>{u.distance ? `${u.distance} mi away` : u.location}</p>
+                      {u.is_hot_traveler && (
+                        <div style={{ 
+                          background: 'linear-gradient(135deg, #FF6B35, #EF4444)', 
+                          color: 'white', 
+                          padding: '4px 10px', 
+                          borderRadius: '12px', 
+                          fontSize: '0.7rem', 
+                          fontWeight: '600',
+                          marginBottom: '8px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}>
+                          🔥 Hot Traveler {u.traveling_to && `→ ${u.traveling_to}`}
+                        </div>
+                      )}
                       <button onClick={() => navigate(`/profile/${u.user_id}`)} className="btn-primary">
                         View Profile
                       </button>
