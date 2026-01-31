@@ -476,7 +476,11 @@ async def discover_users(
     if max_age:
         query.setdefault("age", {})["$lte"] = max_age
     
-    acted_users = await db.matches.find({"user_id": current_user["user_id"]}, {"_id": 0, "target_user_id": 1}).to_list(1000)
+    # Get acted users (limited to prevent unbounded query)
+    acted_users = await db.matches.find(
+        {"user_id": current_user["user_id"]}, 
+        {"_id": 0, "target_user_id": 1}
+    ).sort("created_at", -1).limit(500).to_list(500)
     acted_ids = [m["target_user_id"] for m in acted_users]
     if acted_ids:
         query["user_id"]["$nin"] = acted_ids
