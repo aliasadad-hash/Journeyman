@@ -452,6 +452,7 @@ async def discover_users(
     min_age: Optional[int] = Query(None),
     max_age: Optional[int] = Query(None),
     max_distance: Optional[int] = Query(None),
+    hot_travelers_only: bool = False,
     skip: int = 0,
     limit: int = 20
 ):
@@ -485,20 +486,30 @@ async def discover_users(
     
     users = await db.users.aggregate(pipeline).to_list(limit)
     
-    # Calculate distances
-    if current_user.get("latitude"):
-        for user in users:
-            if user.get("latitude"):
-                user["distance"] = calculate_distance(
-                    current_user["latitude"], current_user["longitude"],
-                    user["latitude"], user["longitude"]
-                )
+    # Calculate distances and check hot traveler status
+    for user in users:
+        if current_user.get("latitude") and user.get("latitude"):
+            user["distance"] = calculate_distance(
+                current_user["latitude"], current_user["longitude"],
+                user["latitude"], user["longitude"]
+            )
+        # Check hot traveler status
+        hot_traveler_info = await check_hot_traveler(user["user_id"])
+        user.update(hot_traveler_info)
     
     # Filter by distance if specified
     if max_distance and current_user.get("latitude"):
         users = [u for u in users if u.get("distance", 0) <= max_distance]
     
-    return {"users": users, "count": len(users)}
+    # Filter to hot travelers only if requested
+    if hot_travelers_only:
+        users = [u for u in users if u.get("is_hot_traveler")]
+    
+    # Sort: hot travelers first, then by priority
+    users.sort(key=lambda x: (not x.get("is_hot_traveler", False), -x.get("priority", 0)))
+    
+    hot_count = sum(1 for u in users if u.get("is_hot_traveler"))
+    return {"users": users, "count": len(users), "hot_travelers_count": hot_count}
 
 async def check_hot_traveler(user_id: str, target_lat: float = None, target_lon: float = None) -> dict:
     """Check if user is a hot traveler (has active travel schedule in the area)"""
