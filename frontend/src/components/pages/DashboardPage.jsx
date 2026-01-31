@@ -69,7 +69,24 @@ export const DashboardPage = () => {
       <header className="sticky top-0 z-40 glass-dark p-4">
         <div className="max-w-lg mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold gradient-text">Discover</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            {/* Notification Bell */}
+            <div className="relative notification-badge-wrapper">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)} 
+                className={`p-2.5 rounded-lg transition-colors ${showNotifications ? 'bg-[var(--brand-gold)] text-[var(--background)]' : 'bg-[var(--secondary)]'}`}
+                data-testid="notification-btn"
+              >
+                <Icons.Bell size={20} />
+              </button>
+              {unreadCount > 0 && (
+                <span className="notification-count">{unreadCount > 9 ? '9+' : unreadCount}</span>
+              )}
+              {showNotifications && (
+                <NotificationDropdown onClose={() => { setShowNotifications(false); loadUnreadCount(); }} />
+              )}
+            </div>
+            
             {/* Hot Travelers Toggle */}
             <button 
               onClick={() => setHotTravelersOnly(!hotTravelersOnly)} 
