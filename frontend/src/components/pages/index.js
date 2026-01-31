@@ -11,3 +11,4 @@ export { ProfileViewPage } from './ProfileViewPage';
 export { SchedulesPage } from './SchedulesPage';
 export { MyProfilePage } from './MyProfilePage';
 export { NearbyPage } from './NearbyPage';
+export { SettingsPage } from './SettingsPage';
