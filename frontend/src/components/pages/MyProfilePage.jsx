@@ -178,6 +178,11 @@ export const MyProfilePage = () => {
               onChange={(e) => setFormData(p => ({ ...p, bio: e.target.value }))} 
               className="input w-full h-32 resize-none" 
             />
+            {/* AI Bio Generator */}
+            <AIBioGenerator 
+              onBioGenerated={(bio) => setFormData(p => ({ ...p, bio }))}
+              currentBio={formData.bio}
+            />
             <input 
               type="text" 
               placeholder="Location" 
