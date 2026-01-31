@@ -1050,10 +1050,16 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 # Include the router
 app.include_router(api_router)
 
+# CORS: When credentials are needed, cannot use wildcard origin
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://localhost:3000",
+        "https://travel-match-12.preview.emergentagent.com",
+        "http://travel-match-12.preview.emergentagent.com"
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
