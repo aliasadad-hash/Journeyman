@@ -15,6 +15,7 @@ import {
   SchedulesPage,
   MyProfilePage,
   NearbyPage,
+  SettingsPage,
 } from "./components/pages";
 
 // Protected route wrapper
@@ -74,6 +75,7 @@ const AppRoutes = () => {
       <Route path="/profile/:profileId" element={<ProtectedRoute><ProfileViewPage /></ProtectedRoute>} />
       <Route path="/schedules" element={<ProtectedRoute><SchedulesPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
