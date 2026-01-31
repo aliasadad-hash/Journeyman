@@ -721,6 +721,8 @@ async def send_message(user_id: str, request: Request, message: ChatMessageCreat
         data={"sender_id": current_user["user_id"], "conversation_id": conv_id}
     )
     
+    # Remove MongoDB's _id before returning
+    doc.pop("_id", None)
     return doc
 
 # ==================== TRAVEL SCHEDULE ENDPOINTS ====================
