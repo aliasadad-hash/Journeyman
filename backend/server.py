@@ -493,16 +493,19 @@ async def discover_users(
     
     users = await db.users.aggregate(pipeline).to_list(limit)
     
-    # Calculate distances and check hot traveler status
+    # Calculate distances
     for user in users:
         if current_user.get("latitude") and user.get("latitude"):
             user["distance"] = calculate_distance(
                 current_user["latitude"], current_user["longitude"],
                 user["latitude"], user["longitude"]
             )
-        # Check hot traveler status
-        hot_traveler_info = await check_hot_traveler(user["user_id"])
-        user.update(hot_traveler_info)
+    
+    # Batch check hot traveler status (fixes N+1 query)
+    user_ids = [u["user_id"] for u in users]
+    hot_traveler_map = await batch_check_hot_travelers(user_ids)
+    for user in users:
+        user.update(hot_traveler_map.get(user["user_id"], {"is_hot_traveler": False}))
     
     # Filter by distance if specified
     if max_distance and current_user.get("latitude"):
