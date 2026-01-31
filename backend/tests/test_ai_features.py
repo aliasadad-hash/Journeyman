@@ -597,8 +597,8 @@ class TestExistingEndpointsStillWork:
         )
         assert response.status_code == 200
         data = response.json()
-        assert "profiles" in data
-        print(f"SUCCESS: /discover endpoint works, found {len(data['profiles'])} profiles")
+        assert "users" in data  # Discover returns 'users' not 'profiles'
+        print(f"SUCCESS: /discover endpoint works, found {len(data['users'])} users")
     
     def test_schedules(self, authenticated_user):
         """Test /schedules endpoint"""
