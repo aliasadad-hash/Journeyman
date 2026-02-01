@@ -90,6 +90,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <OnlineStatusProvider>
+          <GlobalHeader />
           <AppRoutes />
         </OnlineStatusProvider>
       </AuthProvider>
