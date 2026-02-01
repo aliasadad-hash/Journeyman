@@ -31,7 +31,7 @@ export const MatchesPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="matches-page">
-      <header className="sticky top-0 z-40 glass-dark p-4">
+      <header className="sticky top-0 z-40 glass-dark p-4 pl-16">
         <h1 className="text-2xl font-bold gradient-text mb-4">Connections</h1>
         <div className="flex gap-2">
           <button 

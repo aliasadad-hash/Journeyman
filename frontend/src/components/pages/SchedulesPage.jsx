@@ -42,7 +42,7 @@ export const SchedulesPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="schedules-page">
-      <header className="sticky top-0 z-40 glass-dark p-4">
+      <header className="sticky top-0 z-40 glass-dark p-4 pl-16">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold gradient-text">Travel Schedule</h1>
           <button 

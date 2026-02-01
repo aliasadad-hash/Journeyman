@@ -28,7 +28,7 @@ export const ChatsPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="chats-page">
-      <header className="sticky top-0 z-40 glass-dark p-4">
+      <header className="sticky top-0 z-40 glass-dark p-4 pl-16">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold gradient-text">Messages</h1>
           {onlineCount > 0 && (
