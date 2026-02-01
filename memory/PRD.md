@@ -73,6 +73,14 @@ Using Emergent LLM Key for all AI integrations:
 - [x] Browser geolocation API integration
 - [x] Real-time location tracking with permission handling
 - [x] Interactive Leaflet map with dark theme tiles
+- [x] **City Autocomplete Feature** (Feb 1, 2026) ✨ NEW
+  - Type 3+ characters to search cities worldwide
+  - Uses OpenStreetMap Nominatim API (free, no API key)
+  - Shows city, state, country with MapPin icons
+  - "Use Current Location" button for quick selection
+  - Auto-fills latitude/longitude for accurate nearby matching
+  - Endpoint: GET /api/location/cities?q={query}
+  - Reverse geocoding: GET /api/location/reverse?lat={lat}&lon={lon}
 - [x] User pins with profile photos as markers
 - [x] Custom "You are here" pulsing marker
 - [x] Distance calculation using Haversine formula
