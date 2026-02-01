@@ -1,178 +1,144 @@
 {
   "identity": {
-    "name": "Journeyman",
-    "persona": "The Rugged Connector",
-    "tone": "Trustworthy, Masculine, Adventurous, Premium",
-    "aesthetic": "Midnight Aviation",
-    "theme_mode": "dark"
-  },
-  "typography": {
-    "font_family": {
-      "heading": "Barlow Condensed, sans-serif",
-      "body": "Manrope, sans-serif",
-      "mono": "JetBrains Mono, monospace"
-    },
-    "scale": {
-      "h1": "text-5xl md:text-7xl font-bold tracking-tighter uppercase",
-      "h2": "text-4xl md:text-5xl font-bold tracking-tight uppercase",
-      "h3": "text-2xl md:text-3xl font-semibold tracking-tight",
-      "body_lg": "text-lg leading-relaxed",
-      "body_base": "text-base leading-relaxed",
-      "caption": "text-sm font-medium tracking-wide uppercase text-muted-foreground"
-    },
-    "imports": [
-      "@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Manrope:wght@400;500;700&display=swap');"
+    "persona": "E1: The Anti-AI Designer",
+    "mission": "Create a premium, rugged, and dynamic dating app for travelers that breaks the 'generic dating app' mold.",
+    "principles": [
+      "Fusion over Imitation: Mix 'Tactical Gear' aesthetics with 'Luxury Travel' vibes.",
+      "Emotion First: Every interaction should feel 'exciting' and 'urgent'.",
+      "Content is King: User photos are the heroes; UI recedes into the dark.",
+      "Zoom In: High-impact, full-screen imagery for profiles.",
+      "Negative Space: Use deep dark space to create mystery and focus."
+    ],
+    "anti_patterns": [
+      "No generic 'Inter' font for headings.",
+      "No flat, boring gray backgrounds. Use texture and depth.",
+      "No 'Bootstrap' grids. Use asymmetric, dynamic layouts.",
+      "No 'Rainbow' gradients. Stick to the strict Gold/Midnight/Signal palette."
     ]
   },
-  "colors": {
+  "design_system": {
+    "theme": "dark",
     "palette": {
-      "background": "#0B1120",
-      "foreground": "#F8FAFC",
-      "primary": "#EAB308",
-      "primary_foreground": "#0B1120",
-      "secondary": "#1E293B",
-      "secondary_foreground": "#F8FAFC",
-      "accent": "#3B82F6",
-      "accent_foreground": "#FFFFFF",
-      "muted": "#1E293B",
-      "muted_foreground": "#94A3B8",
-      "border": "#1E293B",
-      "input": "#1E293B",
-      "ring": "#EAB308"
+      "name": "Midnight Highway",
+      "colors": {
+        "background": {
+          "primary": "#0B1120",
+          "secondary": "#111827",
+          "tertiary": "#1F2937",
+          "glass": "rgba(11, 17, 32, 0.85)"
+        },
+        "text": {
+          "primary": "#F8FAFC",
+          "secondary": "#94A3B8",
+          "muted": "#64748B"
+        },
+        "brand": {
+          "gold": "#EAB308",
+          "gold_dim": "#CA8A04",
+          "gold_glow": "rgba(234, 179, 8, 0.5)"
+        },
+        "functional": {
+          "signal_blue": "#3B82F6",
+          "success": "#10B981",
+          "error": "#EF4444",
+          "hot": "#F97316"
+        }
+      },
+      "gradients": {
+        "gold_rush": "linear-gradient(135deg, #EAB308 0%, #CA8A04 100%)",
+        "midnight_fade": "linear-gradient(to bottom, rgba(11, 17, 32, 0) 0%, #0B1120 100%)",
+        "hot_streak": "linear-gradient(135deg, #FF6B35 0%, #EF4444 100%)"
+      }
     },
-    "semantic": {
-      "brand_gold": "#EAB308",
-      "brand_blue": "#3B82F6",
-      "brand_dark": "#0B1120",
-      "success": "#10B981",
-      "warning": "#F59E0B",
-      "error": "#EF4444"
+    "typography": {
+      "headings": {
+        "family": "Barlow Condensed, sans-serif",
+        "weights": ["700", "900"],
+        "usage": "Uppercase, tight tracking (-0.02em), used for all screen titles and major CTAs."
+      },
+      "body": {
+        "family": "Manrope, sans-serif",
+        "weights": ["400", "500", "600"],
+        "usage": "Clean, legible, used for bios, chats, and settings."
+      }
     },
-    "gradients": {
-      "hero": "linear-gradient(to bottom right, #0B1120, #111827)",
-      "gold_shine": "linear-gradient(135deg, #EAB308 0%, #FACC15 50%, #CA8A04 100%)",
-      "blue_glow": "linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%)"
-    }
-  },
-  "visual_enhancers": {
+    "spacing": {
+      "scale": "Tailwind default but doubled for 'breathing room' (e.g., p-8 instead of p-4).",
+      "grid_gap": "gap-6 or gap-8"
+    },
     "radius": {
-      "default": "0px",
-      "sm": "0px",
-      "md": "4px",
-      "lg": "8px",
-      "full": "9999px"
+      "default": "rounded-xl",
+      "buttons": "rounded-full",
+      "cards": "rounded-2xl"
     },
     "shadows": {
-      "card": "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)",
-      "glow": "0 0 15px rgba(59, 130, 246, 0.3)",
-      "gold_glow": "0 0 15px rgba(234, 179, 8, 0.2)"
-    },
-    "borders": {
-      "default": "1px solid #1E293B",
-      "active": "1px solid #EAB308",
-      "glass": "1px solid rgba(255, 255, 255, 0.1)"
-    },
-    "glassmorphism": {
-      "nav": "backdrop-blur-xl bg-background/80 border-t border-white/10",
-      "card": "backdrop-blur-md bg-secondary/50 border border-white/5"
-    }
-  },
-  "layout": {
-    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-    "section_spacing": "py-16 md:py-24",
-    "grid_system": {
-      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6",
-      "cards": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      "glow": "0 0 20px rgba(234, 179, 8, 0.3)",
+      "deep": "0 20px 40px rgba(0, 0, 0, 0.6)"
     }
   },
   "components": {
     "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 font-bold uppercase tracking-wider rounded-sm shadow-[0_0_10px_rgba(234,179,8,0.2)] transition-all hover:scale-[1.02]",
-      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 font-semibold uppercase tracking-wide rounded-sm border border-white/10",
-      "ghost": "hover:bg-white/5 text-foreground font-medium uppercase tracking-wide"
+      "primary": "bg-gradient-to-r from-brand-gold to-yellow-600 text-background font-bold uppercase tracking-wider hover:scale-105 transition-transform shadow-glow",
+      "secondary": "bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-white/20",
+      "fab": "fixed bottom-24 right-6 w-14 h-14 rounded-full bg-brand-gold text-background shadow-glow flex items-center justify-center z-50 animate-bounce-slow"
     },
     "cards": {
-      "profile": "bg-card text-card-foreground border border-border rounded-lg overflow-hidden shadow-card hover:border-primary/50 transition-colors",
-      "travel": "bg-secondary/30 backdrop-blur-sm border border-white/5 rounded-md p-6 relative overflow-hidden group hover:bg-secondary/50 transition-all"
+      "profile": "relative w-full aspect-[3/4] rounded-3xl overflow-hidden shadow-deep border border-white/5",
+      "glass": "bg-background-glass backdrop-blur-xl border border-white/10 rounded-xl p-6"
+    },
+    "navigation": {
+      "bottom_bar": "fixed bottom-0 left-0 right-0 h-20 bg-background-glass backdrop-blur-2xl border-t border-white/5 flex justify-around items-center z-50",
+      "active_tab": "text-brand-gold scale-110 transition-all",
+      "inactive_tab": "text-gray-500 hover:text-gray-300"
     },
     "inputs": {
-      "default": "bg-secondary/50 border-border focus:border-primary focus:ring-1 focus:ring-primary rounded-sm h-12 text-lg"
+      "default": "bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all placeholder:text-gray-600"
     }
   },
-  "image_urls": {
-    "hero": {
-      "url": "https://images.unsplash.com/photo-1678485652523-cabdeb24a6a3?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "alt": "Airplane wing view at sunset",
-      "category": "hero"
+  "features": {
+    "nearby": {
+      "prominence": "HIGH",
+      "implementation": [
+        "Banner on Discover Page: 'Hot Travelers Nearby' (Horizontal Scroll)",
+        "Central Tab in Bottom Nav: 'Map' icon",
+        "Map View: Dark mode map tiles (CartoDB Dark Matter), Gold pulses for users",
+        "FAB: 'Check In' button on Map screen to broadcast location"
+      ]
     },
-    "travelers": [
-      {
-        "url": "https://images.unsplash.com/photo-1677365492809-36819c3cd0f6?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Rugged traveler portrait",
-        "category": "profile_sample"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1597466372553-872e25a63b11?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Man in white shirt",
-        "category": "profile_sample"
-      }
-    ],
-    "backgrounds": [
-      {
-        "url": "https://images.unsplash.com/photo-1569924291145-12a05f455966?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Truck on highway sunset",
-        "category": "background"
-      }
-    ]
-  },
-  "icons": {
-    "library": "lucide-react",
-    "style": "stroke-width-1.5",
-    "mapping": {
-      "travel": "Plane",
-      "truck": "Truck",
-      "location": "MapPin",
-      "chat": "MessageSquare",
-      "profile": "User",
-      "settings": "Settings",
-      "search": "Search",
-      "filter": "SlidersHorizontal",
-      "calendar": "Calendar"
-    }
-  },
-  "motion": {
-    "transitions": {
-      "default": "transition-all duration-300 ease-out",
-      "slow": "transition-all duration-700 ease-in-out"
+    "chat": {
+      "style": "Bubble-free or modern bubbles. Sent: Gold gradient. Received: Dark Glass.",
+      "features": ["Typing indicators", "Read receipts", "Reaction picker"]
     },
-    "animations": {
-      "fade_in": "animate-in fade-in duration-500",
-      "slide_up": "animate-in slide-in-from-bottom-4 duration-500",
-      "pulse_glow": "animate-pulse"
+    "profile": {
+      "gallery": "Full-screen vertical scroll or Tappable story-style gallery.",
+      "badges": "Neon-style outlines for 'Trucker', 'Pilot', 'Vacationer'."
     }
   },
-  "instructions_to_main_agent": [
-    "CRITICAL: Use the 'Barlow Condensed' font for ALL headings (h1-h3). This is the core of the brand identity.",
-    "CRITICAL: The primary color is GOLD (#EAB308). Use it for primary actions (buttons) and key highlights. Do not overuse it.",
-    "CRITICAL: The background must be deep midnight blue (#0B1120), NOT pure black.",
-    "Use 'Manrope' for all body text to ensure high readability.",
-    "Implement a 'Bento' grid layout for the dashboard/discovery page.",
-    "Use the provided image URLs for placeholders. Do not use generic placeholders.",
-    "Ensure all interactive elements have a hover state that increases brightness or adds a subtle glow.",
-    "For the 'Travel Schedule', use a timeline or list view with clear dates and location icons.",
-    "Profile cards should emphasize the photo first, with profession/type clearly visible as a badge.",
-    "Use 'lucide-react' for all icons.",
-    "Maintain a 'masculine' aesthetic: sharp corners (rounded-sm or rounded-md max), high contrast, bold typography.",
-    "Always add 'data-testid' to interactive elements."
-  ],
+  "assets": {
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1549918060-c0c5aa3ded02?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "profiles": [
+        "https://images.unsplash.com/photo-1677365492809-36819c3cd0f6?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1597466372553-872e25a63b11?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1662971640032-ed60396966a0?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "https://images.unsplash.com/photo-1570369336897-57984b6cf5dc?crop=entropy&cs=srgb&fm=jpg&q=85"
+      ],
+      "map_marker": "https://images.unsplash.com/photo-1618345190897-73f2b762e4bb?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "icons": "Lucide React (default) or Heroicons"
+  },
   "universal_guidelines": [
     "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
-    "Don't make generic centered layouts. Use asymmetry.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
     "Create depth through layered design elements with z-index hierarchy.",
-    "Use glass-morphism effects with backdrop filters (12-24px blur) for overlays and navbars.",
-    "NEVER use AI assistant Emoji characters.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms.",
+    "You MUST NOT center align the app container.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations.",
+    "NEVER use AI assistant Emoji characters like 🤖🧠 etc.",
     "Every interaction needs micro-animations.",
     "Use 2-3x more spacing than feels comfortable.",
-    "Prioritize using pre-existing components from src/components/ui when applicable."
-  ]
+    "All interactive elements MUST include data-testid attribute."
+  ],
+  "instructions_to_main_agent": "Follow the 'Midnight Highway' theme strictly. Implement the 'Nearby' feature with maximum prominence as requested. Use the provided image URLs for placeholders. Ensure the app feels 'native' with smooth transitions between screens."
 }
