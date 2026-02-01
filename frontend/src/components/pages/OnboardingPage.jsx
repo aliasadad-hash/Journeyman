@@ -133,7 +133,17 @@ export const OnboardingPage = () => {
               ))}
             </div>
             <div className="space-y-4">
-              <input type="text" placeholder="Your Location (e.g., Los Angeles, CA)" value={formData.location} onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))} className="input w-full text-lg" data-testid="location-input" />
+              <CityAutocomplete
+                value={formData.location}
+                onChange={(loc) => setFormData(prev => ({ ...prev, location: loc }))}
+                onLocationSelect={(data) => setFormData(prev => ({ 
+                  ...prev, 
+                  location: data.location,
+                  latitude: data.latitude,
+                  longitude: data.longitude
+                }))}
+                placeholder="Start typing your city..."
+              />
               <input type="number" placeholder="Your Age" value={formData.age} onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))} className="input w-full text-lg" min="18" max="99" data-testid="age-input" />
             </div>
             <div className="flex gap-4">
