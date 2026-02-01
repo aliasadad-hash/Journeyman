@@ -24,8 +24,8 @@ async def search_cities(q: str = Query(..., min_length=3, max_length=100)):
                     "q": q,
                     "format": "json",
                     "addressdetails": 1,
-                    "limit": 10,
-                    "featuretype": "city",
+                    "limit": 15,
+                    "type": "city",
                     "dedupe": 1
                 },
                 headers={
@@ -41,6 +41,12 @@ async def search_cities(q: str = Query(..., min_length=3, max_length=100)):
             
             for item in data:
                 address = item.get("address", {})
+                item_type = item.get("type", "")
+                item_class = item.get("class", "")
+                
+                # Filter to only include cities, towns, villages
+                if item_class not in ["place", "boundary"] and item_type not in ["city", "town", "village", "municipality", "administrative"]:
+                    continue
                 
                 # Build city name with context
                 city = (
