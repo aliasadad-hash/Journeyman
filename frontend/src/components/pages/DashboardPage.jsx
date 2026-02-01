@@ -215,6 +215,9 @@ export const DashboardPage = () => {
         </div>
       )}
 
+      {/* Floating Action Button for Nearby */}
+      <NearbyFAB nearbyCount={nearbyCount} />
+
       <BottomNav active="discover" />
     </div>
   );
