@@ -357,3 +357,170 @@ async def get_online_users(request: Request):
         user["online"] = manager.is_online(user["user_id"])
     
     return {"users": users}
+
+
+@router.get("/discover/passing-through")
+async def get_travelers_passing_through(
+    request: Request,
+    days_ahead: int = Query(14, ge=1, le=60),
+    radius_miles: int = Query(50, ge=10, le=200)
+):
+    """
+    Find travelers whose upcoming schedules pass through your area.
+    
+    This shows users who have travel schedules with destinations near your current location,
+    even if they haven't arrived yet - perfect for planning meetups!
+    
+    Args:
+        days_ahead: How many days into the future to look (default 14, max 60)
+        radius_miles: How close their destination should be to you (default 50 miles)
+    """
+    current_user = await get_current_user(request)
+    
+    if not current_user.get("latitude") or not current_user.get("longitude"):
+        return {
+            "travelers": [],
+            "message": "Set your location to see travelers passing through your area",
+            "your_location": None
+        }
+    
+    user_lat = current_user["latitude"]
+    user_lon = current_user["longitude"]
+    user_location = current_user.get("location", "your area")
+    
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    future_date = (datetime.now(timezone.utc) + timedelta(days=days_ahead)).strftime("%Y-%m-%d")
+    
+    # Find all schedules in the date range that have coordinates
+    schedules = await db.schedules.find({
+        "user_id": {"$ne": current_user["user_id"]},
+        "start_date": {"$lte": future_date},
+        "end_date": {"$gte": today},
+        "latitude": {"$exists": True, "$ne": None},
+        "longitude": {"$exists": True, "$ne": None}
+    }, {"_id": 0}).to_list(500)
+    
+    # Filter by distance and group by user
+    travelers_map = {}
+    
+    for schedule in schedules:
+        if not schedule.get("latitude") or not schedule.get("longitude"):
+            continue
+        
+        # Calculate distance from user to schedule destination
+        distance = calculate_distance(
+            user_lat, user_lon,
+            schedule["latitude"], schedule["longitude"]
+        )
+        
+        if distance <= radius_miles:
+            user_id = schedule["user_id"]
+            
+            # Determine if they're currently there or arriving soon
+            start_date = schedule["start_date"]
+            end_date = schedule["end_date"]
+            
+            if start_date <= today <= end_date:
+                status = "here_now"
+                status_text = "Currently here"
+            elif start_date > today:
+                days_until = (datetime.strptime(start_date, "%Y-%m-%d") - datetime.strptime(today, "%Y-%m-%d")).days
+                status = "arriving_soon"
+                status_text = f"Arriving in {days_until} day{'s' if days_until != 1 else ''}"
+            else:
+                continue  # Skip past schedules
+            
+            trip_info = {
+                "schedule_id": schedule.get("schedule_id"),
+                "destination": schedule.get("destination"),
+                "title": schedule.get("title"),
+                "start_date": start_date,
+                "end_date": end_date,
+                "distance_miles": distance,
+                "status": status,
+                "status_text": status_text,
+                "looking_to_meet": schedule.get("looking_to_meet", True)
+            }
+            
+            if user_id not in travelers_map:
+                travelers_map[user_id] = {
+                    "user_id": user_id,
+                    "trips": [],
+                    "closest_distance": distance,
+                    "soonest_arrival": start_date
+                }
+            
+            travelers_map[user_id]["trips"].append(trip_info)
+            
+            # Track closest distance and soonest arrival for sorting
+            if distance < travelers_map[user_id]["closest_distance"]:
+                travelers_map[user_id]["closest_distance"] = distance
+            if start_date < travelers_map[user_id]["soonest_arrival"]:
+                travelers_map[user_id]["soonest_arrival"] = start_date
+    
+    if not travelers_map:
+        return {
+            "travelers": [],
+            "count": 0,
+            "your_location": user_location,
+            "message": f"No travelers passing through within {radius_miles} miles in the next {days_ahead} days"
+        }
+    
+    # Get user profiles
+    user_ids = list(travelers_map.keys())
+    users = await db.users.find(
+        {"user_id": {"$in": user_ids}},
+        {"_id": 0, "password_hash": 0}
+    ).to_list(100)
+    
+    # Check which users we've already acted on
+    acted_users = await db.matches.find(
+        {"user_id": current_user["user_id"], "target_user_id": {"$in": user_ids}},
+        {"_id": 0, "target_user_id": 1}
+    ).to_list(500)
+    acted_ids = set(m["target_user_id"] for m in acted_users)
+    
+    # Combine user profiles with trip data
+    travelers = []
+    for user in users:
+        user_id = user["user_id"]
+        trip_data = travelers_map.get(user_id, {})
+        
+        # Sort trips by start date
+        trips = sorted(trip_data.get("trips", []), key=lambda x: x["start_date"])
+        
+        # Get the primary (soonest/closest) trip
+        primary_trip = trips[0] if trips else None
+        
+        travelers.append({
+            **user,
+            "trips": trips,
+            "primary_trip": primary_trip,
+            "total_trips_nearby": len(trips),
+            "already_acted": user_id in acted_ids,
+            "closest_distance": trip_data.get("closest_distance"),
+            "is_here_now": any(t["status"] == "here_now" for t in trips)
+        })
+    
+    # Sort: those here now first, then by soonest arrival, then by distance
+    travelers.sort(key=lambda x: (
+        not x["is_here_now"],  # Here now first
+        x["primary_trip"]["start_date"] if x["primary_trip"] else "9999-99-99",  # Soonest arrival
+        x["closest_distance"] or 999  # Closest distance
+    ))
+    
+    # Count stats
+    here_now_count = sum(1 for t in travelers if t["is_here_now"])
+    arriving_soon_count = len(travelers) - here_now_count
+    
+    return {
+        "travelers": travelers,
+        "count": len(travelers),
+        "here_now_count": here_now_count,
+        "arriving_soon_count": arriving_soon_count,
+        "your_location": user_location,
+        "search_params": {
+            "days_ahead": days_ahead,
+            "radius_miles": radius_miles
+        }
+    }
