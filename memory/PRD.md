@@ -118,6 +118,13 @@ Using Emergent LLM Key for all AI integrations:
 - [x] Bio, location, age, interests fields
 - [x] Profile editing functionality
 - [x] Online/offline status indicators
+- [x] **Photo Gallery Manager UI** (Feb 1, 2026) ✨ NEW
+  - Upload up to 6 photos to profile gallery
+  - Set any photo as main profile picture
+  - Delete photos from gallery
+  - Upload progress indicator
+  - Supports JPEG, PNG, WebP (max 10MB)
+  - Uses local storage (S3 ready when configured)
 
 ### Discovery & Matching (Jan 2026)
 - [x] Swipe cards with Like/Pass/Super Like
