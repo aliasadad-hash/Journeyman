@@ -55,7 +55,9 @@ export const OnboardingPage = () => {
       const res = await api.post('/profile/complete-onboarding', { 
         profession: formData.profession, 
         bio: formData.bio, 
-        location: formData.location, 
+        location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
         age: formData.age ? parseInt(formData.age) : null, 
         interests: formData.interests, 
         icebreakers: formData.icebreakers 
