@@ -10,11 +10,11 @@ export const GlobalHeader = ({ transparent = false }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout } = useAuth();
   
-  // Don't show on landing, login, signup pages
+  // Don't show on landing, login, signup pages or when not logged in
   const hiddenPaths = ['/', '/login', '/signup', '/onboarding', '/auth/callback'];
-  if (hiddenPaths.includes(location.pathname) || !isAuthenticated) {
+  if (hiddenPaths.includes(location.pathname) || !user) {
     return null;
   }
 
