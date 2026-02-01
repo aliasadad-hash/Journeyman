@@ -81,26 +81,43 @@ export const NearbyPage = () => {
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="nearby-page">
       <header className="sticky top-0 z-40 glass-dark p-4">
         <div className="max-w-lg mx-auto">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold gradient-text">Nearby</h1>
+          <div className="flex items-center gap-3 mb-4">
+            <BackButton to="/dashboard" />
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold gradient-text flex items-center gap-2">
+                <Icons.MapPin size={24} className="text-[var(--brand-gold)]" />
+                Travelers Nearby
+              </h1>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                {nearbyUsers.length} people within 50 miles • 
+                <span className="text-green-400 ml-1">
+                  {nearbyUsers.filter(u => u.online).length} online now
+                </span>
+              </p>
+            </div>
             <div className="map-view-toggle">
               <button 
                 className={viewMode === 'map' ? 'active' : ''} 
                 onClick={() => setViewMode('map')}
                 data-testid="view-map-btn"
               >
-                <Icons.Map size={16} /> Map
+                <Icons.Map size={16} />
               </button>
               <button 
                 className={viewMode === 'list' ? 'active' : ''} 
                 onClick={() => setViewMode('list')}
                 data-testid="view-list-btn"
               >
-                <Icons.List size={16} /> List
+                <Icons.List size={16} />
               </button>
             </div>
           </div>
-          {geoLoading && <p className="text-sm text-[var(--muted-foreground)]">Getting your location...</p>}
+          {geoLoading && (
+            <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)] p-2 rounded-lg bg-[var(--secondary)]">
+              <div className="spinner-small"></div>
+              Getting your location...
+            </div>
+          )}
         </div>
       </header>
 
