@@ -8,6 +8,7 @@ import { useGeolocation } from '../../hooks/useGeolocation';
 import { api } from '../../utils/api';
 import { PROFESSIONS } from '../../utils/constants';
 import { BottomNav } from '../shared/BottomNav';
+import { BackButton, DistanceBadge, OnlineStatus } from '../shared/Navigation';
 import * as Icons from '../shared/Icons';
 
 // Fix Leaflet default marker icon issue
