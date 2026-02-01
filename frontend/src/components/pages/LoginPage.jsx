@@ -109,6 +109,7 @@ export const LoginPage = () => {
             </div>
           )}
           <div className="relative">
+            <Icons.Mail size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none z-10" />
             <input 
               type="email" 
               placeholder="Email" 
@@ -118,9 +119,9 @@ export const LoginPage = () => {
               required 
               data-testid="login-email-input" 
             />
-            <Icons.Mail size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" />
           </div>
           <div className="relative">
+            <Icons.Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none z-10" />
             <input 
               type="password" 
               placeholder="Password" 
@@ -130,7 +131,6 @@ export const LoginPage = () => {
               required 
               data-testid="login-password-input" 
             />
-            <Icons.Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)]" />
           </div>
           <button 
             type="submit" 
