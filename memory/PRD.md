@@ -88,7 +88,7 @@ Using Emergent LLM Key for all AI integrations:
   - Auto-fills latitude/longitude for accurate nearby matching
   - Endpoint: GET /api/location/cities?q={query}
   - Reverse geocoding: GET /api/location/reverse?lat={lat}&lon={lon}
-- [x] **Travelers Passing Through Feature** (Feb 1, 2026) ✨ NEW
+- [x] **Travelers Passing Through Feature** (Feb 1, 2026)
   - Shows users with travel schedules passing through your area
   - Displays "Here Now" vs "Arriving Soon" status
   - Configurable time range (7, 14, 30 days)
@@ -98,6 +98,11 @@ Using Emergent LLM Key for all AI integrations:
 - [x] User pins with profile photos as markers
 - [x] Custom "You are here" pulsing marker
 - [x] Distance calculation using Haversine formula
+- [x] **Location Feature Prominence** (Feb 1, 2026) ✨ NEW
+  - Floating Action Button (FAB) on all main pages with user count badge
+  - "Travelers Nearby" banner on Discover page with LIVE indicator
+  - Dedicated "Nearby" tab in bottom navigation (5 tabs total)
+  - Back button navigation from Nearby page to Dashboard
 - [x] Nearby users view (within 50 miles)
 - [x] Map/List toggle view modes
 - [x] Popup profiles with "View Profile" action
