@@ -243,7 +243,7 @@ export const ChatPage = () => {
                 matchUserId={userId} 
                 matchName={otherUser.name?.split(' ')[0] || 'your match'}
                 onSendMessage={(msg) => {
-                  setMessage(msg);
+                  setNewMessage(msg);
                   // Auto-send the message
                   setTimeout(() => {
                     const sendBtn = document.querySelector('[data-testid="send-message-btn"]');
@@ -258,6 +258,22 @@ export const ChatPage = () => {
                 <AIIceBreakers matchUserId={userId} matchName={otherUser.name?.split(' ')[0] || 'your match'} />
               </div>
             </div>
+          )}
+          
+          {/* AI Conversation Revival - shown when conversation has messages but went quiet */}
+          {messages.length > 0 && otherUser && (
+            <AIConversationRevival 
+              matchUserId={userId}
+              matchName={otherUser.name?.split(' ')[0] || 'your match'}
+              lastMessageTime={messages[messages.length - 1]?.timestamp}
+              onSendMessage={(msg) => {
+                setNewMessage(msg);
+                setTimeout(() => {
+                  const sendBtn = document.querySelector('[data-testid="send-message-btn"]');
+                  if (sendBtn) sendBtn.click();
+                }, 100);
+              }}
+            />
           )}
           
           {messages.map(msg => (
