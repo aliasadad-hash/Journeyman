@@ -92,6 +92,14 @@ export const SwipeCard = ({ profile, onSwipe, isTop }) => {
         </div>
       )}
 
+      {/* Online Status Badge */}
+      {profile.online && (
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/20 border border-green-500/40 backdrop-blur-sm">
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
+          <span className="text-xs font-semibold text-green-400">Online</span>
+        </div>
+      )}
+
       {/* Hot Traveler Badge */}
       {profile.is_hot_traveler && (
         <div className="hot-traveler-badge" data-testid="hot-traveler-badge">
