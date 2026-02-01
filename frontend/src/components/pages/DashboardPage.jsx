@@ -18,6 +18,7 @@ export const DashboardPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [hotTravelersOnly, setHotTravelersOnly] = useState(false);
   const [hotTravelersCount, setHotTravelersCount] = useState(0);
+  const [nearbyCount, setNearbyCount] = useState(0);
   const [matchModal, setMatchModal] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
