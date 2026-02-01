@@ -367,8 +367,132 @@ WHY_IT_WORKS: [brief explanation of why this message is effective]"""
             raise
 
 
+class AIConversationRevival:
+    """Generate playful messages to revive stalling conversations using Claude."""
+    
+    def __init__(self):
+        self.api_key = EMERGENT_LLM_KEY
+    
+    async def generate_revival_messages(
+        self,
+        your_profile: Dict,
+        their_profile: Dict,
+        last_messages: List[Dict],
+        hours_since_last: int = 24
+    ) -> Dict:
+        """
+        Generate messages to revive a stalling conversation.
+        
+        Args:
+            your_profile: Current user's profile data
+            their_profile: Match's profile data
+            last_messages: Recent messages in the conversation
+            hours_since_last: Hours since last message
+        
+        Returns:
+            Dict with revival messages, context, and tips
+        """
+        if not self.api_key:
+            raise ValueError("EMERGENT_LLM_KEY not configured")
+        
+        chat = LlmChat(
+            api_key=self.api_key,
+            session_id=f"revival_{uuid.uuid4().hex[:8]}",
+            system_message="""You are a conversation revival expert for Journeyman, a dating app for travelers.
+            Your job is to help users re-engage matches when conversations go quiet.
+            Generate messages that are:
+            - Playful and light-hearted (not desperate or needy)
+            - Reference something from the previous conversation OR their profile
+            - Create curiosity or invite easy responses
+            - Feel natural, like something a confident person would say
+            - Short (under 80 characters) - brevity is attractive
+            
+            Also provide context on WHY the conversation might have stalled and tips for keeping it going."""
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        
+        their_name = their_profile.get("name", "").split()[0] if their_profile.get("name") else "them"
+        their_interests = ", ".join(their_profile.get("interests", [])) or "traveling"
+        their_profession = their_profile.get("profession", "traveler")
+        
+        # Format recent messages
+        message_context = ""
+        if last_messages:
+            for msg in last_messages[-5:]:  # Last 5 messages
+                sender = "You" if msg.get("sender_id") == your_profile.get("user_id") else their_name
+                content = msg.get("content", "")[:100]
+                message_context += f"{sender}: {content}\n"
+        else:
+            message_context = "No previous messages - conversation just started"
+        
+        time_context = f"{hours_since_last} hours" if hours_since_last < 48 else f"{hours_since_last // 24} days"
+        
+        prompt = f"""A conversation has gone quiet for {time_context}. Help revive it!
+
+THEIR PROFILE:
+- Name: {their_name}
+- Profession: {their_profession}
+- Interests: {their_interests}
+
+RECENT MESSAGES:
+{message_context}
+
+Generate your response in this EXACT format:
+REVIVAL_MESSAGES:
+- [playful re-engagement message 1]
+- [playful re-engagement message 2]
+- [playful re-engagement message 3]
+STALL_REASON: [brief analysis of why conversation might have stalled]
+TIPS:
+- [tip 1 for keeping conversation flowing]
+- [tip 2 for keeping conversation flowing]
+URGENCY: [1-10 how urgent it is to reach out - 10 = might lose them]"""
+        
+        user_message = UserMessage(text=prompt)
+        
+        try:
+            response = await chat.send_message(user_message)
+            
+            # Parse response
+            result = {
+                "revival_messages": [],
+                "stall_reason": "",
+                "tips": [],
+                "urgency": 5,
+                "their_name": their_name,
+                "hours_since_last": hours_since_last
+            }
+            
+            lines = response.strip().split('\n')
+            current_section = None
+            
+            for line in lines:
+                line = line.strip()
+                if line == "REVIVAL_MESSAGES:":
+                    current_section = "revival_messages"
+                elif line.startswith("STALL_REASON:"):
+                    result["stall_reason"] = line.replace("STALL_REASON:", "").strip()
+                elif line == "TIPS:":
+                    current_section = "tips"
+                elif line.startswith("URGENCY:"):
+                    try:
+                        score = line.replace("URGENCY:", "").strip()
+                        result["urgency"] = min(10, max(1, int(float(score))))
+                    except:
+                        pass
+                elif line.startswith("-") and current_section:
+                    text = line[1:].strip().strip('"').strip("'")
+                    if text:
+                        result[current_section].append(text)
+            
+            return result
+        except Exception as e:
+            logger.error(f"Conversation revival error: {e}")
+            raise
+
+
 # Singleton instances
 bio_generator = AIBioGenerator()
 ice_breaker_generator = AIIceBreakerGenerator()
 smart_matcher = AISmartMatcher()
 first_message_generator = AIFirstMessageGenerator()
+conversation_revival = AIConversationRevival()
