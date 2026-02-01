@@ -133,10 +133,17 @@ Using Emergent LLM Key for all AI integrations:
 - [x] **Message reactions (emoji reactions on messages)** (Jan 31, 2026)
 
 ### Travel Schedules (Jan 2026)
-- [x] Create travel schedule with destination, dates
-- [x] Option to mark "looking to meet"
-- [x] View other users' public schedules
-- [x] Nearby travelers discovery
+- [x] Create, view, delete travel schedules
+- [x] View other users' travel schedules
+- [x] Find nearby travelers
+- [x] **Trip Planning Mode** (Feb 1, 2026) ✨ NEW
+  - Preview potential meetups BEFORE creating a trip
+  - Shows locals at destination + travelers with overlapping dates
+  - Automatic notifications when schedules overlap
+  - Trip matches summary on schedules page
+  - Endpoints:
+    - POST /api/schedules/plan-trip (preview meetups)
+    - GET /api/schedules/trip-matches (all your trip matches)
 
 ### Notifications (Jan 2026)
 - [x] In-app notifications for new matches
