@@ -21,6 +21,7 @@ from routes.schedules import router as schedules_router
 from routes.notifications import router as notifications_router
 from routes.media import router as media_router
 from routes.ai import router as ai_router
+from routes.location import router as location_router
 
 # Import helpers for WebSocket
 from utils.helpers import get_conversation_id
