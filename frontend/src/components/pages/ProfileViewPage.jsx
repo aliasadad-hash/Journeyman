@@ -38,9 +38,12 @@ export const ProfileViewPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)]" data-testid="profile-view-page">
-      <header className="absolute top-0 left-0 right-0 z-40 p-4 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2 glass rounded-full" data-testid="back-btn">
+      <header className="absolute top-0 left-0 right-0 z-40 p-4 flex items-center justify-between">
+        <button onClick={() => navigate(-1)} className="back-button glass" data-testid="back-btn">
           <Icons.ChevronLeft size={24} />
+        </button>
+        <button onClick={() => navigate(`/chat/${profileId}`)} className="back-button glass" data-testid="message-btn">
+          <Icons.MessageSquare size={20} />
         </button>
       </header>
       
