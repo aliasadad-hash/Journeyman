@@ -236,6 +236,7 @@ export const SwipeCard = ({ profile, onSwipe, isTop }) => {
           {profile.bio && <p className="text-white/80 text-sm mt-2 line-clamp-2">{profile.bio}</p>}
         </div>
       </div>
+      </div>
 
       {/* Enhanced Action Buttons - Only show for top card */}
       {isTop && (
