@@ -150,7 +150,12 @@ export const DashboardPage = () => {
         </div>
       </header>
 
-      <main className="flex flex-col items-center justify-center p-4 pt-8 min-h-[70vh]">
+      {/* Nearby Banner - Prominent Location Feature */}
+      <div className="max-w-lg mx-auto px-4 pt-4">
+        <NearbyBanner count={nearbyCount} />
+      </div>
+
+      <main className="flex flex-col items-center justify-center p-4 pt-4 min-h-[60vh]">
         {loading ? (
           <div className="spinner"></div>
         ) : users.length === 0 ? (
