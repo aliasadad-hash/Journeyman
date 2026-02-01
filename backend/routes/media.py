@@ -56,8 +56,7 @@ async def upload_to_s3(content: bytes, filename: str, content_type: str) -> str:
             Bucket=S3_BUCKET_NAME,
             Key=filename,
             Body=content,
-            ContentType=content_type,
-            ACL='public-read'  # Make the file publicly accessible
+            ContentType=content_type
         )
         return get_s3_url(filename)
     except ClientError as e:
