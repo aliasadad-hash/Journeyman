@@ -148,20 +148,21 @@ export const SwipeCard = ({ profile, onSwipe, isTop }) => {
   const superOpacity = Math.min(1, Math.max(0, -dragOffset.y / SWIPE_THRESHOLD));
 
   return (
-    <div className="relative">
-      <div 
-        ref={cardRef} 
-        className="swipe-card"
-        style={cardStyle} 
-        onMouseDown={handleMouseDown} 
-        onMouseMove={handleMouseMove} 
-        onMouseUp={handleMouseUp} 
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        data-testid={`swipe-card-${profile.user_id}`}
-      >
+    <div className="swipe-card-container">
+      <div className="swipe-card-wrapper">
+        <div 
+          ref={cardRef} 
+          className="swipe-card"
+          style={cardStyle} 
+          onMouseDown={handleMouseDown} 
+          onMouseMove={handleMouseMove} 
+          onMouseUp={handleMouseUp} 
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          data-testid={`swipe-card-${profile.user_id}`}
+        >
         <img src={photos[photoIndex]} alt={profile.name} className="swipe-card-image" draggable={false} />
         <div className="swipe-card-gradient" />
         
