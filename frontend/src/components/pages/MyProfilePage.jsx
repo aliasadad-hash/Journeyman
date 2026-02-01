@@ -184,12 +184,16 @@ export const MyProfilePage = () => {
               onBioGenerated={(bio) => setFormData(p => ({ ...p, bio }))}
               currentBio={formData.bio}
             />
-            <input 
-              type="text" 
-              placeholder="Location" 
-              value={formData.location} 
-              onChange={(e) => setFormData(p => ({ ...p, location: e.target.value }))} 
-              className="input w-full" 
+            <CityAutocomplete
+              value={formData.location}
+              onChange={(loc) => setFormData(p => ({ ...p, location: loc }))}
+              onLocationSelect={(data) => setFormData(p => ({ 
+                ...p, 
+                location: data.location,
+                latitude: data.latitude,
+                longitude: data.longitude
+              }))}
+              placeholder="Start typing your city..."
             />
             <input 
               type="number" 
