@@ -2,6 +2,16 @@
 /* Hide Emergent badge to prevent UI blocking */
 #emergent-badge {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Also hide via attribute selector in case ID changes */
+a[href*="emergent-badge"],
+a[href*="emergent.sh/?utm_source"] {
+  display: none !important;
+  visibility: hidden !important;
 }
 
 /* Slide-in animation for menu */
