@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../utils/api';
 import { PROFESSIONS, INTEREST_OPTIONS } from '../../utils/constants';
+import { CityAutocomplete } from '../shared/CityAutocomplete';
 import * as Icons from '../shared/Icons';
 
 export const OnboardingPage = () => {
@@ -15,6 +16,8 @@ export const OnboardingPage = () => {
     profession: '', 
     bio: '', 
     location: '', 
+    latitude: null,
+    longitude: null,
     age: '', 
     interests: [], 
     icebreakers: [] 
