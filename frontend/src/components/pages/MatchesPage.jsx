@@ -84,6 +84,7 @@ export const MatchesPage = () => {
           </div>
         )}
       </main>
+      <NearbyFAB />
       <BottomNav active="matches" />
     </div>
   );
