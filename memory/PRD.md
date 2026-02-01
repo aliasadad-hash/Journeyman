@@ -279,4 +279,4 @@ Using Emergent LLM Key for all AI integrations:
   - Send button now clearly visible and clickable at all times
 
 ## Last Updated
-February 1, 2026 - Fixed Chat UI overlap issue; added Trip Planning Mode with meetup preview, schedule overlap notifications, and trip matches summary
+February 1, 2026 - Added AI Conversation Revival feature (Claude-powered) to re-spark stalling chats with playful messages and conversation tips
