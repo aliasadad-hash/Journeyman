@@ -63,11 +63,18 @@ Using Emergent LLM Key for all AI integrations:
   - Returns score (0-100), reasons, and conversation topics
   - Endpoint: GET /api/ai/compatibility/{user_id}
   - Batch endpoint: GET /api/ai/compatibility-batch
-- [x] **AI First Message (GPT-5.2)** - Perfect opening message generator ✨ NEW
+- [x] **AI First Message (GPT-5.2)** - Perfect opening message generator
   - 4 tones: friendly, flirty, witty, sincere
   - Returns message + confidence score + talking points + why it works
   - Combines compatibility analysis with personalized messaging
   - Endpoint: POST /api/ai/first-message/{user_id}
+- [x] **AI Conversation Revival (Claude Sonnet 4.5)** - Re-spark stalling chats ✨ NEW (Feb 1, 2026)
+  - Auto-detects when conversations go quiet (24+ hours)
+  - Generates 3 playful, personalized re-engagement messages
+  - Analyzes WHY the conversation might have stalled
+  - Provides tips for keeping conversations flowing
+  - Urgency indicator (1-10) for how soon to reach out
+  - Endpoint: POST /api/ai/revive-conversation/{user_id}
 
 ### Geolocation & Map (Jan 2026)
 - [x] Browser geolocation API integration
