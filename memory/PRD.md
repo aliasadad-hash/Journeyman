@@ -259,4 +259,4 @@ Using Emergent LLM Key for all AI integrations:
 - WebSocket endpoint: /ws/{user_id}
 
 ## Last Updated
-February 1, 2026 - Added City Autocomplete feature with worldwide city search and GPS location detection
+February 1, 2026 - Added "Travelers Passing Through" feature showing users with upcoming travel schedules in your area
