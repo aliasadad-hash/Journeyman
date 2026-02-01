@@ -2,6 +2,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { OnlineStatusProvider } from "./context/OnlineStatusContext";
+import { GlobalHeader } from "./components/shared/GlobalHeader";
 import {
   LandingPage,
   LoginPage,
