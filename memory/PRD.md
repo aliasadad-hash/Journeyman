@@ -321,4 +321,4 @@ Using Emergent LLM Key for all AI integrations:
   - Send button now clearly visible and clickable at all times
 
 ## Last Updated
-February 1, 2026 - Added real-time online status indicators across all pages (swipe cards, chat list, matches), OnlineStatusContext for WebSocket-based live tracking
+February 1, 2026 - App store readiness complete: renamed to "JM Travel", hidden Emergent badge, added global hamburger menu, enhanced swipe gestures with touch support
