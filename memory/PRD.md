@@ -173,6 +173,13 @@ Using Emergent LLM Key for all AI integrations:
   - BackButton, PageHeader, NearbyFAB, NearbyBanner
   - DistanceBadge, OnlineStatus indicators
   - Located at: /frontend/src/components/shared/Navigation.jsx
+- [x] **Real-Time Online Status** ✨ NEW
+  - OnlineStatusContext for app-wide online tracking
+  - Green pulsing "Online" badge on swipe cards
+  - Online/offline indicators on chat list avatars
+  - Online status in conversation headers
+  - "X online" count badge in Messages header
+  - ProfileAvatar component with built-in online indicator
 
 ### Travel Schedules (Jan 2026)
 - [x] Create, view, delete travel schedules
