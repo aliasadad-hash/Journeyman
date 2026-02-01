@@ -391,7 +391,7 @@ export const ChatPage = () => {
       </div>
       
       {/* Message Input */}
-      <form onSubmit={sendMessage} className="p-4 glass-dark flex gap-3 items-center">
+      <form onSubmit={sendMessage} className="p-4 pb-16 glass-dark flex gap-3 items-center">
         <input 
           type="text" 
           value={newMessage} 
@@ -400,7 +400,7 @@ export const ChatPage = () => {
           className="input flex-1" 
           data-testid="message-input" 
         />
-        <button type="submit" className="btn-primary p-3" data-testid="send-message-btn">
+        <button type="submit" className="btn-primary p-3 relative z-[10000]" data-testid="send-message-btn">
           <Icons.Send size={20} />
         </button>
       </form>
