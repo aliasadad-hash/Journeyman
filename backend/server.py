@@ -52,6 +52,7 @@ api_router.include_router(schedules_router)
 api_router.include_router(notifications_router)
 api_router.include_router(media_router)
 api_router.include_router(ai_router)
+api_router.include_router(location_router)
 
 # Include the main router
 app.include_router(api_router)
