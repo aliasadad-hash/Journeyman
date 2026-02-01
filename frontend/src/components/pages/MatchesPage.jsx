@@ -66,16 +66,27 @@ export const MatchesPage = () => {
               <button 
                 key={m.user_id} 
                 onClick={() => navigate(tab === 'matches' ? `/chat/${m.user_id}` : `/profile/${m.user_id}`)} 
-                className="card overflow-hidden group" 
+                className="card overflow-hidden group interactive-card" 
                 data-testid={`${tab}-${m.user_id}`}
               >
                 <div className="aspect-[3/4] relative">
                   <img src={m.profile_photo || m.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}`} alt={m.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-transparent to-transparent" />
-                  {m.online && <span className="online-indicator" />}
+                  
+                  {/* Online Status Badge */}
+                  {m.online && (
+                    <div className="absolute top-2 right-2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/20 border border-green-500/40 backdrop-blur-sm">
+                      <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_6px_rgba(74,222,128,0.8)]"></span>
+                      <span className="text-[10px] font-semibold text-green-400">ONLINE</span>
+                    </div>
+                  )}
+                  
                   {m.is_super_like && <span className="super-like-badge"><Icons.Star size={12} filled /> Super Like</span>}
                   <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h3 className="font-bold text-lg truncate">{m.name}</h3>
+                    <h3 className="font-bold text-lg truncate flex items-center gap-2">
+                      {m.name}
+                      {m.online && <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>}
+                    </h3>
                     {m.last_message && <p className="text-xs text-white/60 truncate">{m.last_message.content}</p>}
                   </div>
                 </div>
