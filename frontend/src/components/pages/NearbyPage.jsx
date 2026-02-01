@@ -248,7 +248,7 @@ export const NearbyPage = () => {
           </div>
         )}
       </main>
-      <BottomNav active="discover" />
+      <BottomNav active="nearby" />
     </div>
   );
 };
