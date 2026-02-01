@@ -265,5 +265,11 @@ Using Emergent LLM Key for all AI integrations:
 - Session tokens stored in httpOnly cookies with 7-day expiry
 - WebSocket endpoint: /ws/{user_id}
 
+### UI Bug Fixes (Feb 1, 2026)
+- [x] **Chat UI Overlap Fix** - Resolved issue where "Made with Emergent" badge could overlap the Send button
+  - Added bottom padding to chat input form (pb-16)
+  - Set z-index on send button above badge layer (z-[10000])
+  - Send button now clearly visible and clickable at all times
+
 ## Last Updated
-February 1, 2026 - Added "Trip Planning Mode" with meetup preview, schedule overlap notifications, and trip matches summary
+February 1, 2026 - Fixed Chat UI overlap issue; added Trip Planning Mode with meetup preview, schedule overlap notifications, and trip matches summary
