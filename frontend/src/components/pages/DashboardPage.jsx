@@ -131,6 +131,11 @@ export const DashboardPage = () => {
             </button>
           </div>
         )}
+        
+        {/* Travelers Passing Through */}
+        <div className="max-w-lg mx-auto mt-3">
+          <TravelersPassingThrough userLocation={user?.location} />
+        </div>
       </header>
 
       <main className="flex flex-col items-center justify-center p-4 pt-8 min-h-[70vh]">
