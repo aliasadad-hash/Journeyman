@@ -291,27 +291,6 @@ async def remove_gallery_photo(request: Request, photo_url: str = Query(...)):
     return {"message": "Photo removed from gallery"}
 
 
-@router.get("/media/{filename}")
-async def get_media(filename: str):
-    """Serve locally uploaded media files."""
-    filepath = UPLOAD_DIR / filename
-    if not filepath.exists():
-        raise HTTPException(status_code=404, detail="Media not found")
-    
-    with open(filepath, "rb") as f:
-        content = f.read()
-    
-    ext = filename.split(".")[-1].lower()
-    content_types = {
-        "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
-        "gif": "image/gif", "webp": "image/webp", "mp4": "video/mp4",
-        "webm": "video/webm", "mov": "video/quicktime"
-    }
-    content_type = content_types.get(ext, "application/octet-stream")
-    
-    return Response(content=content, media_type=content_type)
-
-
 @router.get("/media/status")
 async def get_media_status():
     """Check if S3 is configured and working."""
@@ -336,3 +315,24 @@ async def get_media_status():
             "s3_configured": False,
             "status": "using_local_storage"
         }
+
+
+@router.get("/media/{filename}")
+async def get_media(filename: str):
+    """Serve locally uploaded media files."""
+    filepath = UPLOAD_DIR / filename
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail="Media not found")
+    
+    with open(filepath, "rb") as f:
+        content = f.read()
+    
+    ext = filename.split(".")[-1].lower()
+    content_types = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png",
+        "gif": "image/gif", "webp": "image/webp", "mp4": "video/mp4",
+        "webm": "video/webm", "mov": "video/quicktime"
+    }
+    content_type = content_types.get(ext, "application/octet-stream")
+    
+    return Response(content=content, media_type=content_type)
