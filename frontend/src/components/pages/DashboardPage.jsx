@@ -177,7 +177,7 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <>
-            <div className="swipe-card-container">
+            <div className="w-full max-w-[340px] sm:max-w-[380px]">
               {users.slice(0, 2).reverse().map((profile, i) => (
                 <SwipeCard key={profile.user_id} profile={profile} onSwipe={handleSwipe} isTop={i === users.slice(0, 2).length - 1} />
               ))}
