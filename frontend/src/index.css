@@ -217,19 +217,83 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 16px 28px;
+  border-radius: 12px;
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   text-transform: uppercase;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s ease;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(10px);
 }
-.swipe-indicator-like { right: 20px; background: rgba(34, 197, 94, 0.9); color: white; border: 3px solid #22C55E; transform: translateY(-50%) rotate(15deg); }
-.swipe-indicator-nope { left: 20px; background: rgba(239, 68, 68, 0.9); color: white; border: 3px solid #EF4444; transform: translateY(-50%) rotate(-15deg); }
-.swipe-indicator-super { left: 50%; background: rgba(59, 130, 246, 0.9); color: white; border: 3px solid #3B82F6; transform: translate(-50%, -50%); }
+.swipe-indicator-like { right: 24px; background: rgba(34, 197, 94, 0.9); color: white; border: 3px solid #22C55E; transform: translateY(-50%) rotate(12deg); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4); }
+.swipe-indicator-nope { left: 24px; background: rgba(239, 68, 68, 0.9); color: white; border: 3px solid #EF4444; transform: translateY(-50%) rotate(-12deg); box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4); }
+.swipe-indicator-super { left: 50%; top: 30%; background: rgba(59, 130, 246, 0.9); color: white; border: 3px solid #3B82F6; transform: translate(-50%, -50%); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); }
+
+/* Swipe Action Buttons */
+.swipe-action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  margin-top: -60px;
+  position: relative;
+  z-index: 20;
+}
+.swipe-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid;
+  background: var(--background);
+}
+.swipe-btn:hover {
+  transform: scale(1.15);
+}
+.swipe-btn:active {
+  transform: scale(0.95);
+}
+.swipe-btn-nope {
+  border-color: #EF4444;
+  color: #EF4444;
+}
+.swipe-btn-nope:hover {
+  background: #EF4444;
+  color: white;
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+}
+.swipe-btn-like {
+  border-color: #22C55E;
+  color: #22C55E;
+}
+.swipe-btn-like:hover {
+  background: #22C55E;
+  color: white;
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+}
+.swipe-btn-super {
+  width: 50px;
+  height: 50px;
+  border-color: #3B82F6;
+  color: #3B82F6;
+}
+.swipe-btn-super:hover {
+  background: #3B82F6;
+  color: white;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
 
 /* Profile badges */
 .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 4px; }
