@@ -182,18 +182,6 @@ export const DashboardPage = () => {
                 <SwipeCard key={profile.user_id} profile={profile} onSwipe={handleSwipe} isTop={i === users.slice(0, 2).length - 1} />
               ))}
             </div>
-            
-            <div className="flex items-center gap-6">
-              <button onClick={() => handleSwipe('pass')} className="btn-icon btn-icon-pass" data-testid="pass-btn">
-                <Icons.X size={28} />
-              </button>
-              <button onClick={() => handleSwipe('super_like')} className="btn-icon btn-icon-super" data-testid="superlike-btn">
-                <Icons.Star size={24} filled />
-              </button>
-              <button onClick={() => handleSwipe('like')} className="btn-icon btn-icon-like" data-testid="like-btn">
-                <Icons.Heart size={28} filled />
-              </button>
-            </div>
           </>
         )}
       </main>
