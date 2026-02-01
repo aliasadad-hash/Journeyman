@@ -83,8 +83,8 @@ export const SignupPage = () => {
               {error}
             </div>
           )}
-          <div className="relative flex items-center">
-            <span className="absolute left-4 text-[var(--text-secondary)] pointer-events-none z-10">
+          <div className="input-with-icon">
+            <span className="input-icon">
               <Icons.User size={20} />
             </span>
             <input 
@@ -92,13 +92,13 @@ export const SignupPage = () => {
               placeholder="Full Name" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
-              className="input w-full text-lg pl-12" 
+              className="input w-full text-lg" 
               required 
               data-testid="signup-name-input" 
             />
           </div>
-          <div className="relative flex items-center">
-            <span className="absolute left-4 text-[var(--text-secondary)] pointer-events-none z-10">
+          <div className="input-with-icon">
+            <span className="input-icon">
               <Icons.Mail size={20} />
             </span>
             <input 
@@ -106,13 +106,13 @@ export const SignupPage = () => {
               placeholder="Email" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
-              className="input w-full text-lg pl-12" 
+              className="input w-full text-lg" 
               required 
               data-testid="signup-email-input" 
             />
           </div>
-          <div className="relative flex items-center">
-            <span className="absolute left-4 text-[var(--text-secondary)] pointer-events-none z-10">
+          <div className="input-with-icon">
+            <span className="input-icon">
               <Icons.Lock size={20} />
             </span>
             <input 
@@ -120,7 +120,7 @@ export const SignupPage = () => {
               placeholder="Password (min 6 characters)" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
-              className="input w-full text-lg pl-12" 
+              className="input w-full text-lg" 
               minLength={6} 
               required 
               data-testid="signup-password-input" 
