@@ -88,7 +88,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <OnlineStatusProvider>
+          <AppRoutes />
+        </OnlineStatusProvider>
       </AuthProvider>
     </BrowserRouter>
   );
