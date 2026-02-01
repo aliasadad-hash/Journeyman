@@ -252,4 +252,4 @@ Using Emergent LLM Key for all AI integrations:
 - WebSocket endpoint: /ws/{user_id}
 
 ## Last Updated
-January 31, 2026 - Added AI First Message feature (GPT-5.2) combining compatibility + ice breakers for perfect opening messages
+February 1, 2026 - Added City Autocomplete feature with worldwide city search and GPS location detection
