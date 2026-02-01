@@ -64,6 +64,7 @@ export const ChatsPage = () => {
           </div>
         )}
       </main>
+      <NearbyFAB />
       <BottomNav active="chats" />
     </div>
   );
