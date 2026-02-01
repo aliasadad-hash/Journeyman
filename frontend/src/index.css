@@ -263,15 +263,20 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
-  margin-top: -60px;
-  position: relative;
-  z-index: 20;
+  gap: 16px;
+  padding: 16px;
+  margin-top: 12px;
+}
+@media (min-width: 640px) {
+  .swipe-action-buttons {
+    gap: 24px;
+    padding: 20px;
+    margin-top: 16px;
+  }
 }
 .swipe-btn {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -280,6 +285,13 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid;
   background: var(--background);
+  flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .swipe-btn {
+    width: 64px;
+    height: 64px;
+  }
 }
 .swipe-btn:hover {
   transform: scale(1.15);
