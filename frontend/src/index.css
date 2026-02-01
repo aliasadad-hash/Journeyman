@@ -235,14 +235,39 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1rem 1.25rem;
   color: var(--foreground);
   font-size: 1rem;
   transition: all 0.3s ease;
+  height: 56px;
+  display: flex;
+  align-items: center;
 }
 .input:focus { outline: none; border-color: var(--brand-gold); box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15); }
 .input::placeholder { color: var(--muted-foreground); }
+
+/* Input with icon */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-with-icon .input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.input-with-icon .input {
+  padding-left: 48px;
+}
 
 /* Messages */
 .message-sent { background: linear-gradient(135deg, #EAB308 0%, #CA8A04 100%); color: var(--background); border-radius: 20px 20px 4px 20px; }
