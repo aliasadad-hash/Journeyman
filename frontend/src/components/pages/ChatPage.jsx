@@ -209,20 +209,20 @@ export const ChatPage = () => {
     <div className="min-h-screen bg-[var(--background)] flex flex-col" data-testid="chat-page">
       {/* Header */}
       <header className="sticky top-0 z-40 glass-dark p-4 flex items-center gap-4">
-        <button onClick={() => navigate('/chats')} className="p-2 hover:bg-[var(--secondary)] rounded-lg transition-colors" data-testid="chat-back-btn">
+        <button onClick={() => navigate('/chats')} className="back-button" data-testid="chat-back-btn">
           <Icons.ChevronLeft size={24} />
         </button>
-        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[var(--brand-gold)] relative">
+        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[var(--brand-gold)] relative cursor-pointer" onClick={() => navigate(`/profile/${userId}`)}>
           <img src={otherUser?.profile_photo || otherUser?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser?.name || 'U')}`} alt={otherUser?.name} className="w-full h-full object-cover" />
           {otherUser?.online && <span className="online-indicator" />}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 cursor-pointer" onClick={() => navigate(`/profile/${userId}`)}>
           <h1 className="font-bold text-lg">{otherUser?.name}</h1>
           <p className="text-xs text-[var(--muted-foreground)]">
-            {isTyping ? <span className="text-[var(--brand-gold)]">Typing...</span> : otherUser?.online ? 'Online' : 'Offline'}
+            {isTyping ? <span className="text-[var(--brand-gold)]">Typing...</span> : otherUser?.online ? <span className="text-green-400">● Online</span> : 'Offline'}
           </p>
         </div>
-        <button className="p-2 hover:bg-[var(--secondary)] rounded-lg" onClick={() => navigate(`/profile/${userId}`)}>
+        <button className="back-button" onClick={() => navigate(`/profile/${userId}`)} data-testid="view-profile-btn">
           <Icons.User size={20} />
         </button>
       </header>
