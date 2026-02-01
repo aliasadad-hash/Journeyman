@@ -495,3 +495,200 @@ export const AIFirstMessage = ({ matchUserId, matchName, onSendMessage }) => {
     </div>
   );
 };
+
+export const AIConversationRevival = ({ matchUserId, matchName, lastMessageTime, onSendMessage }) => {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [show, setShow] = useState(false);
+
+  // Calculate hours since last message
+  const getHoursSinceLastMessage = () => {
+    if (!lastMessageTime) return 48;
+    const now = new Date();
+    const lastMsg = new Date(lastMessageTime);
+    return Math.floor((now - lastMsg) / (1000 * 60 * 60));
+  };
+
+  const hoursSince = getHoursSinceLastMessage();
+
+  // Only show if conversation has been quiet for 24+ hours
+  const shouldShowRevival = hoursSince >= 24;
+
+  const generateRevival = async () => {
+    setLoading(true);
+    try {
+      const response = await api.post(`/ai/revive-conversation/${matchUserId}`, { 
+        hours_since_last: hoursSince 
+      });
+      setResult(response);
+      setShow(true);
+    } catch (err) {
+      console.error('Failed to generate revival messages:', err);
+      alert('Failed to generate messages. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendMessage = (message) => {
+    if (message && onSendMessage) {
+      onSendMessage(message);
+      setShow(false);
+      setResult(null);
+    }
+  };
+
+  const copyMessage = (message) => {
+    navigator.clipboard.writeText(message);
+  };
+
+  const getUrgencyColor = (urgency) => {
+    if (urgency >= 8) return 'text-red-400';
+    if (urgency >= 5) return 'text-orange-400';
+    return 'text-green-400';
+  };
+
+  const getUrgencyText = (urgency) => {
+    if (urgency >= 8) return 'Reach out soon!';
+    if (urgency >= 5) return 'Time to reconnect';
+    return 'No rush';
+  };
+
+  if (!shouldShowRevival) return null;
+
+  if (!show) {
+    return (
+      <button
+        onClick={generateRevival}
+        disabled={loading}
+        className="w-full p-3 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 flex items-center justify-center gap-2 hover:from-orange-500/30 hover:to-red-500/30 transition-all"
+        data-testid="ai-revival-btn"
+      >
+        {loading ? (
+          <>
+            <div className="spinner-small" />
+            <span className="text-sm">Analyzing conversation...</span>
+          </>
+        ) : (
+          <>
+            <span className="text-xl">💬</span>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-orange-400">Conversation went quiet?</p>
+              <p className="text-xs text-[var(--text-secondary)]">Get AI help to re-spark the connection</p>
+            </div>
+            <Icons.Sparkles size={16} className="text-orange-400 ml-auto" />
+          </>
+        )}
+      </button>
+    );
+  }
+
+  return (
+    <div className="ai-revival p-4 rounded-xl bg-gradient-to-br from-orange-500/10 via-[var(--secondary)]/50 to-transparent border border-orange-500/30 space-y-4 animate-scale-in" data-testid="ai-revival-panel">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">💬</span>
+          <span className="font-semibold">Revive Conversation with {matchName}</span>
+        </div>
+        <button onClick={() => { setShow(false); setResult(null); }} className="text-[var(--text-secondary)] hover:text-white">
+          <Icons.X size={18} />
+        </button>
+      </div>
+
+      {result && (
+        <div className="space-y-4">
+          {/* Urgency indicator */}
+          <div className="flex items-center justify-between p-2 rounded-lg bg-[var(--background)]/50">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[var(--text-secondary)]">Time since last message:</span>
+              <span className="text-sm font-semibold">
+                {hoursSince < 48 ? `${hoursSince}h` : `${Math.floor(hoursSince / 24)}d`}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-semibold ${getUrgencyColor(result.urgency)}`}>
+                {getUrgencyText(result.urgency)}
+              </span>
+              <div className="flex gap-0.5">
+                {[...Array(10)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className={`w-1.5 h-3 rounded-sm ${i < result.urgency ? (result.urgency >= 8 ? 'bg-red-400' : result.urgency >= 5 ? 'bg-orange-400' : 'bg-green-400') : 'bg-[var(--secondary)]'}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Stall reason */}
+          {result.stall_reason && (
+            <div className="p-3 rounded-lg bg-[var(--background)]/50 border-l-2 border-orange-500">
+              <p className="text-xs text-[var(--text-secondary)] mb-1">Why it might have stalled:</p>
+              <p className="text-sm">{result.stall_reason}</p>
+            </div>
+          )}
+
+          {/* Revival messages */}
+          <div className="space-y-2">
+            <p className="text-xs text-[var(--text-secondary)] font-semibold">Pick a message to re-spark the chat:</p>
+            {result.revival_messages.map((message, i) => (
+              <div 
+                key={i}
+                className="p-3 rounded-xl bg-[var(--brand-gold)]/10 border border-[var(--brand-gold)]/30 hover:bg-[var(--brand-gold)]/20 transition-all group"
+              >
+                <p className="text-sm font-medium mb-2">"{message}"</p>
+                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => copyMessage(message)}
+                    className="text-xs px-2 py-1 rounded bg-[var(--secondary)] hover:bg-[var(--secondary)]/80 flex items-center gap-1"
+                  >
+                    <Icons.Copy size={12} />
+                    Copy
+                  </button>
+                  <button
+                    onClick={() => sendMessage(message)}
+                    className="text-xs px-2 py-1 rounded bg-[var(--brand-gold)] text-[var(--background)] hover:bg-[var(--brand-gold)]/80 flex items-center gap-1"
+                    data-testid={`send-revival-${i}`}
+                  >
+                    <Icons.Send size={12} />
+                    Send
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tips */}
+          {result.tips?.length > 0 && (
+            <div className="pt-3 border-t border-[var(--secondary)]">
+              <p className="text-xs text-[var(--text-secondary)] mb-2">💡 Tips to keep the conversation going:</p>
+              <div className="space-y-1">
+                {result.tips.map((tip, i) => (
+                  <p key={i} className="text-xs flex items-start gap-2">
+                    <span className="text-green-400">✓</span>
+                    {tip}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Regenerate button */}
+          <button
+            onClick={generateRevival}
+            disabled={loading}
+            className="btn-secondary w-full py-2 text-sm flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <div className="spinner-small" />
+            ) : (
+              <Icons.RefreshCw size={14} />
+            )}
+            Generate New Messages
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
