@@ -277,3 +277,85 @@ async def generate_first_message(user_id: str, request: Request, body: FirstMess
         raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to generate message. Please try again.")
+
+
+class ConversationRevivalRequest(BaseModel):
+    hours_since_last: int = 24
+
+
+class ConversationRevivalResponse(BaseModel):
+    revival_messages: List[str]
+    stall_reason: str
+    tips: List[str]
+    urgency: int
+    their_name: str
+    hours_since_last: int
+
+
+@router.post("/revive-conversation/{user_id}", response_model=ConversationRevivalResponse)
+async def revive_conversation(user_id: str, request: Request, body: ConversationRevivalRequest):
+    """
+    Generate AI-powered messages to revive a stalling conversation.
+    
+    Detects when a conversation has gone quiet and suggests playful,
+    engaging messages to re-spark the connection.
+    
+    Returns 3 revival message options plus tips for keeping the chat flowing.
+    """
+    current_user = await get_current_user(request)
+    
+    if current_user["user_id"] == user_id:
+        raise HTTPException(status_code=400, detail="Cannot revive conversation with yourself")
+    
+    # Get target user profile
+    target_user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "password_hash": 0})
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if they're matched
+    my_like = await db.matches.find_one({
+        "user_id": current_user["user_id"],
+        "target_user_id": user_id,
+        "action": {"$in": ["like", "super_like"]}
+    })
+    their_like = await db.matches.find_one({
+        "user_id": user_id,
+        "target_user_id": current_user["user_id"],
+        "action": {"$in": ["like", "super_like"]}
+    })
+    
+    if not (my_like and their_like):
+        raise HTTPException(status_code=403, detail="You can only revive conversations with matches")
+    
+    # Get recent messages
+    conversation = await db.messages.find({
+        "$or": [
+            {"sender_id": current_user["user_id"], "recipient_id": user_id},
+            {"sender_id": user_id, "recipient_id": current_user["user_id"]}
+        ]
+    }).sort("timestamp", -1).limit(10).to_list(length=10)
+    
+    # Reverse to get chronological order
+    last_messages = list(reversed(conversation)) if conversation else []
+    
+    try:
+        result = await conversation_revival.generate_revival_messages(
+            your_profile=current_user,
+            their_profile=target_user,
+            last_messages=last_messages,
+            hours_since_last=body.hours_since_last
+        )
+        
+        return ConversationRevivalResponse(
+            revival_messages=result["revival_messages"],
+            stall_reason=result["stall_reason"],
+            tips=result["tips"],
+            urgency=result["urgency"],
+            their_name=result["their_name"],
+            hours_since_last=result["hours_since_last"]
+        )
+    
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to generate revival messages. Please try again.")
