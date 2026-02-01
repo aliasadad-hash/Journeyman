@@ -20,6 +20,8 @@ export const MyProfilePage = () => {
     name: user?.name || '', 
     bio: user?.bio || '', 
     location: user?.location || '', 
+    latitude: user?.latitude || null,
+    longitude: user?.longitude || null,
     age: user?.age || '' 
   });
   
@@ -27,7 +29,11 @@ export const MyProfilePage = () => {
 
   const handleSave = async () => {
     try { 
-      const res = await api.put('/profile', { ...formData, age: formData.age ? parseInt(formData.age) : null }); 
+      const updateData = {
+        ...formData,
+        age: formData.age ? parseInt(formData.age) : null
+      };
+      const res = await api.put('/profile', updateData); 
       setUser(res); 
       setEditing(false); 
     } catch (err) { 
