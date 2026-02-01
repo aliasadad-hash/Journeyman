@@ -6,6 +6,7 @@ import { PROFESSIONS } from '../../utils/constants';
 import { BottomNav } from '../shared/BottomNav';
 import { SwipeCard } from '../shared/SwipeCard';
 import { NotificationDropdown } from '../shared/NotificationDropdown';
+import { TravelersPassingThrough } from '../shared/TravelersPassingThrough';
 import * as Icons from '../shared/Icons';
 
 export const DashboardPage = () => {
