@@ -286,4 +286,4 @@ Using Emergent LLM Key for all AI integrations:
   - Send button now clearly visible and clickable at all times
 
 ## Last Updated
-February 1, 2026 - Added Photo Gallery Manager UI with upload, delete, and set-as-main functionality; AI Conversation Revival feature
+February 1, 2026 - Major UX overhaul: Added hybrid navigation with back buttons, prominent Nearby/Location feature (FAB + banner), enhanced bottom nav with 5 tabs, improved screen interactivity
