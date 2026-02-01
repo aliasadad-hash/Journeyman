@@ -321,4 +321,4 @@ Using Emergent LLM Key for all AI integrations:
   - Send button now clearly visible and clickable at all times
 
 ## Last Updated
-February 1, 2026 - Major UX overhaul: Added hybrid navigation with back buttons, prominent Nearby/Location feature (FAB + banner), enhanced bottom nav with 5 tabs, improved screen interactivity
+February 1, 2026 - Added real-time online status indicators across all pages (swipe cards, chat list, matches), OnlineStatusContext for WebSocket-based live tracking
