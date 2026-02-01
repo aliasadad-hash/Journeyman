@@ -266,4 +266,4 @@ Using Emergent LLM Key for all AI integrations:
 - WebSocket endpoint: /ws/{user_id}
 
 ## Last Updated
-February 1, 2026 - Added "Travelers Passing Through" feature showing users with upcoming travel schedules in your area
+February 1, 2026 - Added "Trip Planning Mode" with meetup preview, schedule overlap notifications, and trip matches summary
