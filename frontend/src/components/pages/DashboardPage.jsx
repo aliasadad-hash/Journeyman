@@ -151,11 +151,11 @@ export const DashboardPage = () => {
       </header>
 
       {/* Nearby Banner - Prominent Location Feature */}
-      <div className="max-w-lg mx-auto px-4 pt-4">
+      <div className="max-w-lg mx-auto px-4 pt-3">
         <NearbyBanner count={nearbyCount} />
       </div>
 
-      <main className="flex flex-col items-center justify-center p-4 pt-4 min-h-[60vh]">
+      <main className="flex flex-col items-center p-4 pt-2">
         {loading ? (
           <div className="spinner"></div>
         ) : users.length === 0 ? (
@@ -177,7 +177,7 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <>
-            <div className="swipe-card-container mb-8">
+            <div className="swipe-card-container">
               {users.slice(0, 2).reverse().map((profile, i) => (
                 <SwipeCard key={profile.user_id} profile={profile} onSwipe={handleSwipe} isTop={i === users.slice(0, 2).length - 1} />
               ))}
