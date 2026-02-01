@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from services.database import db
-from services.ai_features import bio_generator, ice_breaker_generator, smart_matcher, first_message_generator
+from services.ai_features import bio_generator, ice_breaker_generator, smart_matcher, first_message_generator, conversation_revival
 from utils.helpers import get_current_user
 
 router = APIRouter(prefix="/ai", tags=["ai"])
