@@ -286,4 +286,4 @@ Using Emergent LLM Key for all AI integrations:
   - Send button now clearly visible and clickable at all times
 
 ## Last Updated
-February 1, 2026 - Added AI Conversation Revival feature (Claude-powered) to re-spark stalling chats with playful messages and conversation tips
+February 1, 2026 - Added Photo Gallery Manager UI with upload, delete, and set-as-main functionality; AI Conversation Revival feature
