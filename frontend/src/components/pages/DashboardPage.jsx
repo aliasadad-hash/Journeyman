@@ -79,7 +79,7 @@ export const DashboardPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="dashboard-page">
-      <header className="sticky top-0 z-40 glass-dark p-4">
+      <header className="sticky top-0 z-40 glass-dark p-4 pl-16">
         <div className="max-w-lg mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold gradient-text">Discover</h1>
           <div className="flex gap-2 items-center">
