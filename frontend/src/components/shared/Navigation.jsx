@@ -2,6 +2,87 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import * as Icons from './Icons';
 
 /**
+ * Online Status Indicator - Shows green dot for online users
+ */
+export const OnlineIndicator = ({ isOnline, size = 'default', showLabel = false, className = '' }) => {
+  const sizeClasses = {
+    small: 'w-2 h-2',
+    default: 'w-3 h-3',
+    large: 'w-4 h-4'
+  };
+  
+  return (
+    <div className={`flex items-center gap-1 ${className}`} data-testid="online-indicator">
+      <span 
+        className={`rounded-full ${sizeClasses[size]} ${
+          isOnline 
+            ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)] animate-pulse' 
+            : 'bg-gray-500'
+        }`}
+      />
+      {showLabel && (
+        <span className={`text-xs ${isOnline ? 'text-green-400' : 'text-gray-500'}`}>
+          {isOnline ? 'Online' : 'Offline'}
+        </span>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Profile Avatar with Online Status
+ */
+export const ProfileAvatar = ({ 
+  src, 
+  name, 
+  isOnline, 
+  size = 'default', 
+  showOnlineStatus = true,
+  onClick,
+  className = '' 
+}) => {
+  const sizeClasses = {
+    small: 'w-10 h-10',
+    default: 'w-12 h-12',
+    large: 'w-16 h-16',
+    xlarge: 'w-20 h-20'
+  };
+  
+  const indicatorPositions = {
+    small: 'bottom-0 right-0 w-2.5 h-2.5 border-2',
+    default: 'bottom-0 right-0 w-3 h-3 border-2',
+    large: 'bottom-0.5 right-0.5 w-3.5 h-3.5 border-2',
+    xlarge: 'bottom-1 right-1 w-4 h-4 border-[3px]'
+  };
+  
+  const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=1E293B&color=F8FAFC`;
+  
+  return (
+    <div 
+      className={`relative ${sizeClasses[size]} rounded-full overflow-visible ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      onClick={onClick}
+      data-testid="profile-avatar"
+    >
+      <img 
+        src={src || fallbackSrc} 
+        alt={name} 
+        className={`${sizeClasses[size]} rounded-full object-cover border-2 border-[var(--secondary)]`}
+      />
+      {showOnlineStatus && (
+        <span 
+          className={`absolute ${indicatorPositions[size]} rounded-full border-[var(--background)] ${
+            isOnline 
+              ? 'bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.8)]' 
+              : 'bg-gray-500'
+          }`}
+          data-testid={isOnline ? 'online-dot' : 'offline-dot'}
+        />
+      )}
+    </div>
+  );
+};
+
+/**
  * Back Button Component - iOS-style back navigation
  */
 export const BackButton = ({ to, onClick, className = '' }) => {
