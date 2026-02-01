@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
 import { BottomNav } from '../shared/BottomNav';
+import { NearbyFAB } from '../shared/Navigation';
 import * as Icons from '../shared/Icons';
 
 export const ChatsPage = () => {
