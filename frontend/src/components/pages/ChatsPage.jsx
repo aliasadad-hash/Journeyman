@@ -23,10 +23,21 @@ export const ChatsPage = () => {
     }
   };
 
+  // Count online users from conversations
+  const onlineCount = conversations.filter(c => c.other_user?.online).length;
+
   return (
     <div className="min-h-screen bg-[var(--background)] pb-24" data-testid="chats-page">
       <header className="sticky top-0 z-40 glass-dark p-4">
-        <h1 className="text-2xl font-bold gradient-text">Messages</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold gradient-text">Messages</h1>
+          {onlineCount > 0 && (
+            <div className="online-count-badge" data-testid="online-count">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+              {onlineCount} online
+            </div>
+          )}
+        </div>
       </header>
       <main className="p-4">
         {loading ? (
