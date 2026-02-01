@@ -83,8 +83,10 @@ export const SignupPage = () => {
               {error}
             </div>
           )}
-          <div className="relative">
-            <Icons.User size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none z-10" />
+          <div className="relative flex items-center">
+            <span className="absolute left-4 text-[var(--text-secondary)] pointer-events-none z-10">
+              <Icons.User size={20} />
+            </span>
             <input 
               type="text" 
               placeholder="Full Name" 
@@ -95,8 +97,10 @@ export const SignupPage = () => {
               data-testid="signup-name-input" 
             />
           </div>
-          <div className="relative">
-            <Icons.Mail size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none z-10" />
+          <div className="relative flex items-center">
+            <span className="absolute left-4 text-[var(--text-secondary)] pointer-events-none z-10">
+              <Icons.Mail size={20} />
+            </span>
             <input 
               type="email" 
               placeholder="Email" 
@@ -107,8 +111,10 @@ export const SignupPage = () => {
               data-testid="signup-email-input" 
             />
           </div>
-          <div className="relative">
-            <Icons.Lock size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none z-10" />
+          <div className="relative flex items-center">
+            <span className="absolute left-4 text-[var(--text-secondary)] pointer-events-none z-10">
+              <Icons.Lock size={20} />
+            </span>
             <input 
               type="password" 
               placeholder="Password (min 6 characters)" 
